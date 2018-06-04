@@ -35,31 +35,47 @@ router.post('/', makeGaEvent('submit', 'form', 'signup'), function (req, res) {
                 req.flash('error', 'Username already exist\'s. Please try again.')
                 return res.redirect('/signup')
             }
-            passutils.pass2hash(req.body.password)
-                .then(function (passhash) {
-                    models.UserLocal.create({
-                        user: {
-                            username: req.body.username,
-                            firstname: req.body.firstname,
-                            lastname: req.body.lastname,
-                            email: req.body.email,
-                            demographic: {
-                                branchId: req.body.branchId,
-                                collegeId: req.body.collegeId,
-                            }
-                        },
-                        password: passhash
-                    }, {
-                        include: [
-                            {model: models.User, include: [models.Demographic]}
-                        ]
-                    }).then(function (user) {
 
-                        mail.welcomeEmail(user.user.dataValues)
+            models.User.findOne({
+                where:{
+                    email:req.body.email
+                }
+            }).then((user) => {
+                if(user){
+                    req.flash('error', 'Email already exist\'s. Please try again.')
+                    return res.redirect('/signup')
+                }
 
-                        res.redirect('/login')
+                passutils.pass2hash(req.body.password)
+                    .then(function (passhash) {
+                        models.UserLocal.create({
+                            user: {
+                                username: req.body.username,
+                                firstname: req.body.firstname,
+                                lastname: req.body.lastname,
+                                email: req.body.email,
+                                demographic: {
+                                    branchId: req.body.branchId,
+                                    collegeId: req.body.collegeId,
+                                }
+                            },
+                            password: passhash
+                        }, {
+                            include: [
+                                {model: models.User, include: [models.Demographic]}
+                            ]
+                        }).then(function (user) {
+
+                            mail.welcomeEmail(user.user.dataValues)
+
+                            res.redirect('/login')
+                        })
                     })
-                })
+            }).catch(function (err) {
+                // Could not register user
+                req.flash('error', 'Unsuccessful registration. Please try again.')
+                return res.redirect('/signup')
+            })
         })
         .catch(function (err) {
             // Could not register user
