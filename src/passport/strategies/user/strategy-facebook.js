@@ -31,6 +31,9 @@ module.exports = new FacebookStrategy({
         }
     }).then((userFacebook) => {
         if(userFacebook){
+            if(req.isAuthenticated()){
+                return cb(null,false,{message:'Sorry,this facebook account is connected with another coding blocks account.'})
+            }
             return cb(null,false,{message:'Email ID already exists.Please login to connect with Facebook.'})
         }
 
