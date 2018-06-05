@@ -28,7 +28,7 @@ module.exports = new GithubStrategy({
     }).then((userGithub) => {
         if(userGithub){
             if(req.isAuthenticated()){
-                return cb(null,false,{message:'Sorry,this github account is connected with another coding blocks account.'})
+                return cb(null,false,{message:'Sorry,this github account is connected with another coding blocks account:' + + userGithub.dataValues.id})
             }
             return cb(null,false,{message:'Email ID already exists.Please login to connect with Github.'})
         }

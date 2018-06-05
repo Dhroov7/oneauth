@@ -31,7 +31,7 @@ module.exports = new TwitterStrategy({
 
         if(userTwitter){
             if(req.isAuthenticated()){
-                return cb(null,false,{message:'Sorry,this twitter account is connected with another coding blocks account.'})
+                return cb(null,false,{message:'Sorry,this twitter account is connected with another coding blocks account:' + userTwitter.dataValues.id})
             }
             return cb(null,false,{message:'Email ID already exists.Please login to connect with Twitter.'})
         }
