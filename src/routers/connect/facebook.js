@@ -14,7 +14,8 @@ router.get('/', passport.authorize('facebook', {
 router.get('/callback', passport.authorize('facebook', {
     scope: config.FACEBOOK_LOGIN_SCOPES,
     failureRedirect: '/login',
-    successReturnToOrRedirect: '/users/me'
+    successReturnToOrRedirect: '/users/me',
+    failureFlash:true
 }))
 
 module.exports = router

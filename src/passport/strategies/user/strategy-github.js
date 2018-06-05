@@ -27,7 +27,7 @@ module.exports = new GithubStrategy({
         }
     }).then((userGithub) => {
         if(userGithub){
-            return cb(null,false)
+            return cb(null,false,{message:'Email ID already exists.Please login to connect with Github.'})
         }
 
         let oldUser = req.user
