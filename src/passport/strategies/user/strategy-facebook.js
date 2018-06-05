@@ -31,7 +31,7 @@ module.exports = new FacebookStrategy({
         }
     }).then((userFacebook) => {
         if(userFacebook){
-            return cb(null,false)
+            return cb(null,false,{message:'Email ID already exists.Please login to connect with Facebook.'})
         }
 
         let oldUser = req.user

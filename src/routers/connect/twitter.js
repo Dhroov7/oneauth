@@ -8,7 +8,8 @@ router.get('/', passport.authorize('twitter'))
 
 router.get('/callback', passport.authorize('twitter', {
     failureRedirect: '/login',
-    successReturnToOrRedirect: '/users/me'
+    successReturnToOrRedirect: '/users/me',
+    failureFlash:true
 }))
 
 module.exports = router

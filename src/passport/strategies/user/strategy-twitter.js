@@ -30,7 +30,7 @@ module.exports = new TwitterStrategy({
     }).then((userTwitter) => {
 
         if(userTwitter){
-            return cb(null,false)
+            return cb(null,false,{message:'Email ID already exists.Please login to connect with Twitter.'})
         }
         let oldUser = req.user
         Raven.setContext({extra: {file: 'twitterstrategy'}})

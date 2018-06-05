@@ -8,7 +8,8 @@ router.get('/', passport.authorize('github'))
 
 router.get('/callback', passport.authorize('github', {
     failureRedirect: '/login',
-    successReturnToOrRedirect: '/users/me'
+    successReturnToOrRedirect: '/users/me',
+    failureFlash:true
 }))
 
 module.exports = router
