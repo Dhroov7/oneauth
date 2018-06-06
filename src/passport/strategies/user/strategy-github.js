@@ -21,14 +21,21 @@ module.exports = new GithubStrategy({
     passReqToCallback: true
 }, function (req, token, tokenSecret, profile, cb) {
     let profileJson = profile._json
-    models.User.findOne({
+    models.User.findAll({
         where:{
             email:profileJson.email
         }
     }).then((userGithub) => {
         if(userGithub){
             if(req.isAuthenticated()){
-                return cb(null,false,{message:'Sorry,this github account is connected with another coding blocks account:' + + userGithub.dataValues.id})
+                let Ids = ''
+                for(let i=0;i<userGithub.length;i++){
+                    Ids += userGithub[i].dataValues.id
+                    if(i<userGithub.length-1){
+                        Ids += ','
+                    }
+                }
+                return cb(null,false,{message:'Sorry,this facebook account is connected with another coding blocks account: ' + Ids})
             }
             return cb(null,false,{message:'Email ID already exists.Please login to connect with Github.'})
         }

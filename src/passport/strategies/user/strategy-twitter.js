@@ -23,7 +23,7 @@ module.exports = new TwitterStrategy({
 
     let profileJson = profile._json
 
-    models.User.findOne({
+    models.User.findAll({
         where:{
             email:profileJson.email
         }
@@ -31,7 +31,14 @@ module.exports = new TwitterStrategy({
 
         if(userTwitter){
             if(req.isAuthenticated()){
-                return cb(null,false,{message:'Sorry,this twitter account is connected with another coding blocks account:' + userTwitter.dataValues.id})
+                let Ids = ''
+                for(let i=0;i<userTwitter.length;i++){
+                    Ids += userTwitter[i].dataValues.id
+                    if(i<userTwitter.length-1){
+                        Ids += ','
+                    }
+                }
+                return cb(null,false,{message:'Sorry,this facebook account is connected with another coding blocks account: ' + Ids})
             }
             return cb(null,false,{message:'Email ID already exists.Please login to connect with Twitter.'})
         }

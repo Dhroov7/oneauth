@@ -25,15 +25,21 @@ module.exports = new FacebookStrategy({
     passReqToCallback: true,
 }, function (req, authToken, refreshToken, profile, cb) {
     let profileJson = profile._json
-    models.User.findOne({
+    models.User.findAll({
         where:{
             email:profileJson.email
         }
     }).then((userFacebook) => {
         if(userFacebook){
-            console.log(userFacebook)
             if(req.isAuthenticated()){
-                return cb(null,false,{message:'Sorry,this facebook account is connected with another coding blocks account: ' + userFacebook.dataValues.id})
+                let Ids = ''
+                for(let i=0;i<userFacebook.length;i++){
+                    Ids += userFacebook[i].dataValues.id
+                    if(i<userFacebook.length-1){
+                        Ids += ','
+                    }
+                }
+                return cb(null,false,{message:'Sorry,this facebook account is connected with another coding blocks account: ' + Ids})
             }
             return cb(null,false,{message:'Email ID already exists.Please login to connect with Facebook.'})
         }
