@@ -20,6 +20,27 @@ module.exports = new GoogleStrategy({
         profileJson.username = profileJson.emails[0].value.split('@')[0] //Pre-@ part of first email
         Raven.setContext({extra: {file: 'googlestrategy'}})
         try {
+
+            const userGoogle = await  models.User.findAll({
+                where:{
+                    email:profileJson.email
+                }
+            })
+
+            if(userGoogle){
+                if(req.isAuthenticated()){
+                    let Ids = ''
+                    for(let i=0;i<userGoogle.length;i++){
+                        Ids += userGoogle[i].dataValues.id
+                        if(i<userGoogle.length-1){
+                            Ids += ','
+                        }
+                    }
+                    return cb(null,false,{message:'Sorry,this facebook account is connected with another coding blocks account: ' + Ids})
+                }
+                return cb(null,false,{message:'Email ID already exists.Please login to connect with github.'})
+            }
+
             if (oldUser) {
                 debug('User exists, is connecting Google account')
                 const glaccount = await  models.UserGoogle.findOne({where: {id: profileJson.id}})

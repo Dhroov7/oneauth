@@ -25,6 +25,27 @@ module.exports = new GithubStrategy({
     let oldUser = req.user
     Raven.setContext({extra: {file: 'githubstrategy'}})
     try{
+
+        const userGithub = await  models.User.findAll({
+            where:{
+                email:profileJson.email
+            }
+        })
+
+        if(userGithub){
+            if(req.isAuthenticated()){
+                let Ids = ''
+                for(let i=0;i<userGithub.length;i++){
+                    Ids += userGithub[i].dataValues.id
+                    if(i<userGithub.length-1){
+                        Ids += ','
+                    }
+                }
+                return cb(null,false,{message:'Sorry,this facebook account is connected with another coding blocks account: ' + Ids})
+            }
+            return cb(null,false,{message:'Email ID already exists.Please login to connect with github.'})
+        }
+
         if(oldUser){
             debug('User exists, is connecting Github account')
             const ghaccount =  await models.UserGithub.findOne({where: {id: profileJson.id}})

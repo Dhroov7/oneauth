@@ -31,6 +31,26 @@ module.exports = new FacebookStrategy({
     Raven.setContext({extra: {file: 'fbstrategy'}})
     const span = tracer.startSpan('passport.strategy.facebook')
     try{
+        const userFacebook = await  models.User.findAll({
+            where:{
+                email:profileJson.email
+            }
+        })
+
+        if(userFacebook){
+            if(req.isAuthenticated()){
+                let Ids = ''
+                for(let i=0;i<userFacebook.length;i++){
+                    Ids += userFacebook[i].dataValues.id
+                    if(i<userFacebook.length-1){
+                        Ids += ','
+                    }
+                }
+                return cb(null,false,{message:'Sorry,this facebook account is connected with another coding blocks account: ' + Ids})
+            }
+            return cb(null,false,{message:'Email ID already exists.Please login to connect with Facebook.'})
+        }
+
         if(oldUser){
             const fbaccount = await  models.UserFacebook.findOne({where: {id: profileJson.id}})
 

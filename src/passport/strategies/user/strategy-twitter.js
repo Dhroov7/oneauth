@@ -27,6 +27,26 @@ module.exports = new TwitterStrategy({
     Raven.setContext({extra: {file: 'twitterstrategy'}})
 
     try {
+        const userTwitter = await  models.User.findAll({
+            where:{
+                email:profileJson.email
+            }
+        })
+
+        if(userTwitter){
+            if(req.isAuthenticated()){
+                let Ids = ''
+                for(let i=0;i<userTwitter.length;i++){
+                    Ids += userTwitter[i].dataValues.id
+                    if(i<userTwitter.length-1){
+                        Ids += ','
+                    }
+                }
+                return cb(null,false,{message:'Sorry,this Twitter account is connected with another coding blocks account: ' + Ids})
+            }
+            return cb(null,false,{message:'Email ID already exists.Please login to connect with github.'})
+        }
+
         if (oldUser) {
             debug('User exists, is connecting Twitter account')
 
