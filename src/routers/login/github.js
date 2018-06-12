@@ -7,7 +7,7 @@ const router = require('express').Router()
 const passport = require('../../passport/passporthandler')
 const debug = require('debug')('oauth:login:github')
 
-function authnOrAuthzGithub(req, res, next) {
+let authnOrAuthzGithub = (req, res, next) => {
     if (!req.isAuthenticated()) {
         if (config.DEBUG) debug("Authn Github = = = = = ")
         passport.authenticate('github', {
@@ -27,7 +27,7 @@ function authnOrAuthzGithub(req, res, next) {
 
 router.get('/', passport.authenticate('github'))
 
-router.get('/callback', authnOrAuthzGithub, function (req, res, next) {
+router.get('/callback', authnOrAuthzGithub, (req, res, next) => {
     res.redirect('/users/me')
 })
 

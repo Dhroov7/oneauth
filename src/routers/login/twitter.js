@@ -6,7 +6,7 @@ const router = require('express').Router()
 const passport = require('../../passport/passporthandler')
 const debug = require('debug')('oauth:login:twitter')
 
-function authnOrAuthzTwitter(req, res, next) {
+let authnOrAuthzTwitter = (req, res, next) => {
     if (!req.isAuthenticated()) {
         if (config.DEBUG) debug("Authn Twitter = = = = = ")
         passport.authenticate('twitter', {
@@ -27,7 +27,7 @@ function authnOrAuthzTwitter(req, res, next) {
 
 router.get('/', passport.authenticate('twitter'))
 
-router.get('/callback', authnOrAuthzTwitter, function (req, res, next) {
+router.get('/callback', authnOrAuthzTwitter, (req, res, next) => {
     res.redirect('/users/me')
 })
 

@@ -4,7 +4,7 @@
 const router = require('express').Router()
 const models = require('../../db/models').models
 
-function DisconnectGithub(req, res) {
+let DisconnectGithub = (req, res) => {
 
     let existingUser = req.user
 
@@ -18,7 +18,7 @@ function DisconnectGithub(req, res) {
         models.UserGithub.destroy({
             where: {userId: req.user.id}
         })
-            .then(function (result) {
+            .then((result) => {
                 return res.redirect('/users/me')
             })
             .catch((err) => {

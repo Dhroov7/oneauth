@@ -1,12 +1,11 @@
-function ensureAdmin(req, res, next) {
+let ensureAdmin = (req, res, next) => {
     if ((req.user.role === 'admin')) {
         next()
     } else {
         res.status(403).send({error: 'Unauthorized'})
     }
 }
-
-function ensureRole(role) {
+let ensureRole = (role) => {
     return function (req, res, next) {
         if (req.user.role === role) {
             next()

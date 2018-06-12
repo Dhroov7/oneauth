@@ -26,7 +26,7 @@ router.get('/username/inter', (req, res, next) => {
     res.render('forgot/username/inter', {title: "Resetusername | OneAuth"})
 })
 
-router.post('/username', makeGaEvent('submit', 'form', 'forgot.username'), function (req, res) {
+router.post('/username', makeGaEvent('submit', 'form', 'forgot.username'),  (req, res) => {
 
     if (req.body.email.trim() === '') {
         req.flash('error', 'Email cannot be empty')
@@ -64,7 +64,7 @@ router.get('/password/inter', (req, res, next) => {
     res.render('forgot/password/inter', {title: "Resetinter | OneAuth"})
 })
 
-router.post('/password', makeGaEvent('submit', 'form', 'resetpassword'), function (req, res) {
+router.post('/password', makeGaEvent('submit', 'form', 'resetpassword'),  (req, res) => {
 
     if (req.body.email.trim() === '') {
         req.flash('error', 'Email cannot be empty')
@@ -95,7 +95,7 @@ router.post('/password', makeGaEvent('submit', 'form', 'resetpassword'), functio
             return res.redirect('/forgot/password')
         }
 
-    }).catch(function (err) {
+    }).catch( (err) => {
         Raven.captureException(err)
         console.error(err.toString())
         req.flash('error', 'Something went wrong. Please try again with your registered email.')
@@ -103,7 +103,7 @@ router.post('/password', makeGaEvent('submit', 'form', 'resetpassword'), functio
     })
 })
 
-router.post('/password/new', makeGaEvent('submit', 'form', 'forgot.password.new'), function (req, res) {
+router.post('/password/new', makeGaEvent('submit', 'form', 'forgot.password.new'),  (req, res) => {
   req.body.key = req.body.key.trim()
   req.body.password = req.body.password.trim()
   req.body.passwordagain = req.body.passwordagain.trim()
@@ -139,7 +139,7 @@ router.post('/password/new', makeGaEvent('submit', 'form', 'forgot.password.new'
         return models.UserLocal.findOne({
           where: {userId: resetEntry.dataValues.userId}
         })
-          .then(function (userlocal) {
+          .then( (userlocal) => {
 
             let passhash = passutils.pass2hash(req.body.password)
 
@@ -191,7 +191,7 @@ router.post('/password/new', makeGaEvent('submit', 'form', 'forgot.password.new'
           {
             where: {userId: resetEntry.dataValues.userId, key: resetEntry.dataValues.key}
           }
-        ).then(function () {
+        ).then( () => {
 
           req.flash('error', 'Reset password Key expired. Please try again.')
           return res.redirect('/forgot/password')
@@ -202,7 +202,7 @@ router.post('/password/new', makeGaEvent('submit', 'form', 'forgot.password.new'
       }
 
     })
-    .catch(function (err) {
+    .catch( (err) => {
       // Could not register user
       Raven.captureException(err)
       debug(err)

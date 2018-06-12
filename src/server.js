@@ -35,7 +35,7 @@ const app = express()
 // ============== START DATADOG
 app.use(expresstracer)
 // ================= END DATADOG
-const redirectToHome = function (req, res, next) {
+const redirectToHome =  (req, res, next) => {
 
     if (req.path == '/') {
         return res.redirect('/users/me')
@@ -44,7 +44,7 @@ const redirectToHome = function (req, res, next) {
     next()
 
 }
-const setuserContext = function (req, res, next) {
+const setuserContext =  (req, res, next) => {
     if (req.user) {
         Raven.setContext({
             user: {
@@ -107,6 +107,6 @@ if(process.env.ONEAUTH_DEV === 'localhost'){
     Raven.captureException = (E) => console.error (E)
 }
 
-app.listen(process.env.PORT || 3838, function () {
+app.listen(process.env.PORT || 3838,  () => {
     debug("Listening on " + config.SERVER_URL)
 })

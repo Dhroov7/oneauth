@@ -2,7 +2,7 @@ const router = require('express').Router()
 const passport = require('../../passport/passporthandler')
 const debug = require('debug')('oauth:login:google')
 
-function authnOrAuthzGoogle(req, res, next) {
+let authnOrAuthzGoogle = (req, res, next) => {
     if (!req.isAuthenticated()) {
         if (config.DEBUG) debug("Authn Google = = = = = ")
         passport.authenticate('google', {
@@ -22,7 +22,7 @@ function authnOrAuthzGoogle(req, res, next) {
 
 router.get('/', passport.authenticate('google'))
 
-router.get('/callback', authnOrAuthzGoogle, function (req, res, next) {
+router.get('/callback', authnOrAuthzGoogle, (req, res, next) => {
     res.redirect('/users/me')
 })
 

@@ -9,7 +9,7 @@ const datadogRouter = connectDatadog({
 
 const tracer = new Tracer({service: 'oneauth'})
 
-function trace(req, res, span) {
+let trace = (req, res, span) => {
     span.addTags({
         'resource': req.path,
         'type': 'web',

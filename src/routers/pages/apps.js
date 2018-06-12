@@ -8,26 +8,26 @@ const models = require('../../db/models').models
 
 router.get('/',
     cel.ensureLoggedIn('/login'),
-    function (req, res, next) {
+     (req, res, next) => {
         models.AuthToken.findAll({
             where: {userId: req.user.id},
             include: [models.Client]
-        }).then(function (apps) {
+        }).then((apps) => {
             return res.render('apps/all', {apps: apps})
-        }).catch(function (err) {
+        }).catch( (err) => {
             res.send("No clients registered")
         })
     }
 )
 
 router.get('/:clientId/delete',cel.ensureLoggedIn('/login'),
-    function (req, res, next) {
+     (req, res, next) => {
         models.AuthToken.findOne({
             where: {
                 userId: req.user.id,
                 clientId: +req.params.clientId
             }
-        }).then(function (token) {
+        }).then((token) => {
             if (!token) {
                 return res.send("Invalid App")
             }

@@ -24,7 +24,7 @@ passport.use(ClientStrategies.clientPasswordStrategy)
 
 passport.use(ApiStrategies.bearerStrategy)
 
-passport.serializeUser(function (user, cb) {
+passport.serializeUser( (user, cb) => {
     if (config.DEBUG) {
         debug("Serialize =  = = = ")
         debug(user)
@@ -33,14 +33,14 @@ passport.serializeUser(function (user, cb) {
     cb(null, user.id)
 })
 
-passport.deserializeUser(function (userid, cb) {
+passport.deserializeUser((userid, cb) => {
     if (config.DEBUG) {
         debug("Deserialize =  = = = ")
         debug(userid)
     }
     models.User.findOne({
         where: {id: userid}
-    }).then(function (user) {
+    }).then((user) => {
         if (process.env.ONEAUTH_DEV === 'localhost') {
             user.role = 'admin'
         }

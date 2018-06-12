@@ -8,7 +8,7 @@ sgMail.setSubstitutionWrappers('{{', '}}')
 const senderEmail = config.EMAIL_SENDER_ADDR
 
 
-const welcomeEmail = function (user) {
+const welcomeEmail =  (user) => {
 
     let msgTemplate = {}
     msgTemplate.template_id = config.WELCOME_EMAIL
@@ -39,7 +39,7 @@ const welcomeEmail = function (user) {
 
 //Send a Single Email to Single or Multiple Recipients where they see each others email addresses
 
-const verifyEmail = function (user, key) {
+const verifyEmail =  (user, key) => {
 
     let msgTemplate = {}
     msgTemplate.template_id = config.VERIFY_EMAIL
@@ -59,7 +59,7 @@ const verifyEmail = function (user, key) {
 }
 
 
-const forgotPassEmail = function (user, key) {
+const forgotPassEmail =  (user, key) => {
 
     let msgTemplate = {}
     msgTemplate.template_id = config.FORGOT_PASS_EMAIL
@@ -79,7 +79,7 @@ const forgotPassEmail = function (user, key) {
 
 //Send a Single Email to Single or Multiple Recipients where they don't see each others email addresses
 
-const verifyEmailPrivate = function (userEmails) {
+const verifyEmailPrivate =  (userEmails) => {
 
     let msgTemplate = {}
     msgTemplate.template_id = config.VERIFY_EMAIL
@@ -101,7 +101,7 @@ const verifyEmailPrivate = function (userEmails) {
 
 }
 
-const forgotUsernameEmail = function (user) {
+const forgotUsernameEmail =  (user) => {
     let msgTemplate = {}
     msgTemplate.template_id = config.FORGOT_USER_EMAIL
     msgTemplate.from = senderEmail

@@ -3,8 +3,7 @@
  */
 const router = require('express').Router()
 const models = require('../../db/models').models
-
-function DisconnectFacebook(req, res) {
+let DisconnectFacebook = (req, res) => {
 
     let existingUser = req.user
 
@@ -18,7 +17,7 @@ function DisconnectFacebook(req, res) {
         models.UserFacebook.destroy({
             where: {userId: req.user.id}
         })
-            .then(function (result) {
+            .then((result) => {
                 return res.redirect('/users/me')
             })
             .catch((err) => {

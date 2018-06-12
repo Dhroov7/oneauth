@@ -10,7 +10,7 @@ const makeGaEvent = require('../utils/ga').makeGaEvent
 const mail = require('../utils/email')
 
 
-router.post('/', makeGaEvent('submit', 'form', 'signup'), function (req, res) {
+router.post('/', makeGaEvent('submit', 'form', 'signup'),  (req, res) => {
 
     if (req.body.username.trim() === '') {
         req.flash('error', 'Username cannot be empty')
@@ -36,7 +36,7 @@ router.post('/', makeGaEvent('submit', 'form', 'signup'), function (req, res) {
                 return res.redirect('/signup')
             }
             passutils.pass2hash(req.body.password)
-                .then(function (passhash) {
+                .then( (passhash) => {
                     models.UserLocal.create({
                         user: {
                             username: req.body.username,
@@ -53,7 +53,7 @@ router.post('/', makeGaEvent('submit', 'form', 'signup'), function (req, res) {
                         include: [
                             {model: models.User, include: [models.Demographic]}
                         ]
-                    }).then(function (user) {
+                    }).then( (user) => {
 
                         mail.welcomeEmail(user.user.dataValues)
 
@@ -61,7 +61,7 @@ router.post('/', makeGaEvent('submit', 'form', 'signup'), function (req, res) {
                     })
                 })
         })
-        .catch(function (err) {
+        .catch( (err) => {
             // Could not register user
             req.flash('error', 'Unsuccessful registration. Please try again.')
             return res.redirect('/signup')

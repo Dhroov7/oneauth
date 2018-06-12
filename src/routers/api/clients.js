@@ -10,7 +10,7 @@ const cel = require('connect-ensure-login')
 
 const urlutils = require('../../utils/urlutils')
 
-router.post('/add', function (req, res) {
+router.post('/add', (req, res) => {
     if (!req.user) {
         return res.status(403).send("Only logged in users can make clients")
     }
@@ -20,10 +20,10 @@ router.post('/add', function (req, res) {
     let clientCallbacks = req.body.callback.replace(/ /g, '').split(';')
 
     //Make sure all urls have http in them
-    clientDomains.forEach(function (url, i, arr) {
+    clientDomains.forEach((url, i, arr) => {
         arr[i] = urlutils.prefixHttp(url)
     })
-    clientCallbacks.forEach(function (url, i, arr) {
+    clientCallbacks.forEach((url, i, arr) => {
         arr[i] = urlutils.prefixHttp(url)
     })
 
@@ -41,7 +41,7 @@ router.post('/add', function (req, res) {
 })
 
 router.post('/edit/:id', cel.ensureLoggedIn('/login'),
-    function (req, res) {
+    (req, res) => {
         let clientId = parseInt(req.params.id)
         let clientName = req.body.clientname
         let clientDomains = req.body.domain.replace(/ /g, '').split(';')
@@ -52,10 +52,10 @@ router.post('/edit/:id', cel.ensureLoggedIn('/login'),
         }
 
         //Make sure all urls have http in them
-        clientDomains.forEach(function (url, i, arr) {
+        clientDomains.forEach((url, i, arr) => {
             arr[i] = urlutils.prefixHttp(url)
         })
-        clientCallbacks.forEach(function (url, i, arr) {
+        clientCallbacks.forEach((url, i, arr) => {
             arr[i] = urlutils.prefixHttp(url)
         })
 
@@ -66,9 +66,9 @@ router.post('/edit/:id', cel.ensureLoggedIn('/login'),
             trusted:trustedClient
         }, {
             where: {id: clientId}
-        }).then(function (client) {
+        }).then((client) => {
             res.redirect('/clients/' + clientId)
-        }).catch(function (error) {
+        }).catch((error) => {
             console.error(error)
         })
 

@@ -12,7 +12,7 @@ const multer = require('../../utils/multer')
 
 router.get('/me',
     cel.ensureLoggedIn('/login'),
-    function (req, res, next) {
+     (req, res, next) => {
 
         models.User.findOne({
             where: {id: req.user.id},
@@ -31,12 +31,12 @@ router.get('/me',
                     ]
                 }
             ]
-        }).then(function (user) {
+        }).then( (user) => {
             if (!user) {
                 res.redirect('/login')
             }
             return res.render('user/me', {user: user})
-        }).catch(function (err) {
+        }).catch( (err) => {
             throw err
         })
 
@@ -44,7 +44,7 @@ router.get('/me',
 
 router.get('/me/edit',
     cel.ensureLoggedIn('/login'),
-    function (req, res, next) {
+     (req, res, next) => {
         Promise.all([
             models.User.findOne({
                 where: {id: req.user.id},
@@ -61,12 +61,12 @@ router.get('/me/edit',
             }),
             models.College.findAll({}),
             models.Branch.findAll({})
-        ]).then(function ([user, colleges, branches]) {
+        ]).then( ([user, colleges, branches]) => {
             if (!user) {
                 res.redirect('/login')
             }
             return res.render('user/me/edit', {user, colleges, branches})
-        }).catch(function (err) {
+        }).catch( (err) => {
             throw err
         })
 
@@ -76,9 +76,9 @@ router.get('/me/edit',
 router.post('/me/edit',
     cel.ensureLoggedIn('/login'),
 
-    function(req, res, next) {
+    (req, res, next) => {
         var upload = multer.upload.single('userpic')
-        upload(req, res, function (err) {
+        upload(req, res, (err) => {
             if(err) {
                 if (err.message === 'File too large') {
                     req.flash('error', 'Profile photo size exceeds 2 MB')
@@ -168,7 +168,7 @@ router.post('/me/edit',
 router.get('/:id',
     cel.ensureLoggedIn('/login'),
     acl.ensureRole('admin'),
-    function (req, res, next) {
+     (req, res, next) => {
 
         models.User.findOne({
             where: {id: req.params.id},
@@ -179,12 +179,12 @@ router.get('/:id',
                 models.UserLms,
                 models.UserTwitter
             ]
-        }).then(function (user) {
+        }).then( (user) => {
             if (!user) {
                 return res.status(404).send({error: "Not found"})
             }
             return res.render('user/id', {user: user})
-        }).catch(function (err) {
+        }).catch( (err) => {
             throw err
         })
     }
@@ -193,16 +193,16 @@ router.get('/:id',
 router.get('/:id/edit',
     cel.ensureLoggedIn('/login'),
     acl.ensureRole('admin'),
-    function (req, res, next) {
+     (req, res, next) => {
 
         models.User.findOne({
             where: {id: req.params.id},
-        }).then(function (user) {
+        }).then( (user) => {
             if (!user) {
                 return res.status(404).send({error: "Not found"})
             }
             return res.render('user/id/edit', {user: user})
-        }).catch(function (err) {
+        }).catch( (err) => {
             throw err
         })
     }
@@ -211,7 +211,7 @@ router.get('/:id/edit',
 router.post('/:id/edit',
     cel.ensureLoggedIn('/login'),
     acl.ensureRole('admin'),
-    function (req, res, next) {
+     (req, res, next) => {
 
         models.User.update({
                 firstname: req.body.firstname,
@@ -222,9 +222,9 @@ router.post('/:id/edit',
             {
                 where: {id: req.params.id},
                 returning: true
-            }).then(function (result) {
+            }).then( (result) => {
             return res.redirect('../' + req.params.id)
-        }).catch(function (err) {
+        }).catch( (err) => {
             throw err
         })
     }

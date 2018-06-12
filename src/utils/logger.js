@@ -17,7 +17,7 @@ const GrayLogger = new WinstonGraylog2({
     silent: false,
     handleExceptions: true,
 
-    prelog: function (msg) {
+    prelog:  (msg) => {
         return msg.trim()
     },
 

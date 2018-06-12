@@ -8,7 +8,7 @@ const upload = Multer ({
         s3: Minio.minioClient,
         bucket: 'oneauth-assets',
         contentType: MulterS3.AUTO_CONTENT_TYPE,
-        key: function (request, file, callback) {
+        key:  (request, file, callback) => {
 
             let srvFileName = 'user' + request.user.id + "_" + Date.now() + '.' + file.originalname.split('.').pop()
             callback (null, srvFileName)
@@ -19,7 +19,7 @@ const upload = Multer ({
     }
 })
 
-function deleteMinio(key) {
+let deleteMinio = (key) => {
     Minio.deleteObject('oneauth-assets', key)
 }
 

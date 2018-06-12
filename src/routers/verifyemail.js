@@ -12,7 +12,7 @@ const Raven = require('raven')
 const uid = require('uid2')
 const cel = require('connect-ensure-login')
 
-router.post('/', cel.ensureLoggedIn('/login'), makeGaEvent('submit', 'form', 'verifyemail'), function (req, res, next) {
+router.post('/', cel.ensureLoggedIn('/login'), makeGaEvent('submit', 'form', 'verifyemail'),  (req, res, next) => {
 
     if (req.body.email.trim() === '') {
         req.flash('error', 'Email cannot be empty')
@@ -35,7 +35,7 @@ router.post('/', cel.ensureLoggedIn('/login'), makeGaEvent('submit', 'form', 've
             }
         })
 
-}, function (req, res) {
+},  (req, res) => {
 
     let user
     if (req.user.email) {
@@ -85,7 +85,7 @@ router.post('/', cel.ensureLoggedIn('/login'), makeGaEvent('submit', 'form', 've
                 return res.redirect('/users/me')
             }
         })
-        .catch(function (err) {
+        .catch( (err) => {
             Raven.captureException(err)
             console.error(err.toString())
             req.flash('error', 'Something went wrong. Please try again with your registered email.')
@@ -93,7 +93,7 @@ router.post('/', cel.ensureLoggedIn('/login'), makeGaEvent('submit', 'form', 've
         })
 })
 
-router.get('/key/:key', function (req, res) {
+router.get('/key/:key',  (req, res) => {
 
     if ((req.params.key === '') || req.params.key.length < 15) {
         req.flash('error', 'Invalid key. please try again.')
@@ -173,7 +173,7 @@ router.get('/key/:key', function (req, res) {
             }
 
         })
-        .catch(function (err) {
+        .catch( (err) => {
             Raven.captureException(err)
             console.error(err.toString())
             req.flash('error', 'There was some problem verifying your email. Please try again.')

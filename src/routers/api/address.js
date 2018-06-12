@@ -6,7 +6,7 @@ const Raven = require('raven')
 const urlutils = require('../../utils/urlutils')
 const {hasNull} = require('../../utils/nullCheck')
 
-router.post('/', cel.ensureLoggedIn('/login'), function (req, res) {
+router.post('/', cel.ensureLoggedIn('/login'), (req, res) => {
     if (hasNull(req.body, ['label', 'first_name', 'last_name', 'number', 'email', 'pincode', 'street_address', 'landmark', 'city', 'stateId', 'countryId'])) {
         res.send(400)
     } else {

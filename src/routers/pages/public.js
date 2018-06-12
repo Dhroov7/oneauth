@@ -9,30 +9,30 @@ const router = require('express').Router()
 const verifyemail = require('../../routers/verifyemail')
 
 
-router.get('/login', cel.ensureNotLoggedIn('/'), function (req, res, next) {
+router.get('/login', cel.ensureNotLoggedIn('/'),  (req, res, next) => {
     res.render('login', {title: "Login | OneAuth", error: req.flash('error')})
 })
-router.get('/signup', cel.ensureNotLoggedIn('/'), function (req, res, next) {
+router.get('/signup', cel.ensureNotLoggedIn('/'),  (req, res, next) => {
     Promise.all([
         models.College.findAll({}), 
         models.Branch.findAll({})
-    ]).then(function ([colleges, branches]) {
+    ]).then( ([colleges, branches]) {
         res.render('signup', {title: "Signup | OneAuth", colleges:colleges, branches:branches})
     })
 })
 
-router.get('/forgot/password/new/:key', cel.ensureNotLoggedIn('/'), function (req, res, next) {
+router.get('/forgot/password/new/:key', cel.ensureNotLoggedIn('/'),  (req, res, next) => {
     //FIXME: Check if the key is correct, and prevent rendering if so
     res.render('forgot/password/new', {title: "Setnewpassword | OneAuth", key: req.params.key})
 })
 
-router.get('/verifyemail/inter', cel.ensureLoggedIn('/login'), function (req, res, next) {
+router.get('/verifyemail/inter', cel.ensureLoggedIn('/login'),  (req, res, next) => {
 
     res.render('verifyemail/inter', {title: "Verifyemailinter | OneAuth"})
 
 })
 
-router.get('/client/add', cel.ensureLoggedIn('/login'), function (req, res, next) {
+router.get('/client/add', cel.ensureLoggedIn('/login'),  (req, res, next) => {
         res.render('client/add', {title: "Add New Client | OneAuth"})
     })
 

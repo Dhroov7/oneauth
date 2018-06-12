@@ -1,7 +1,7 @@
 const router = require('express').Router()
 const models = require('../../db/models').models
 
-function DisconnectGoogle(req, res) {
+let DisconnectGoogle = (req, res) => {
 
     let existingUser = req.user
 
@@ -15,7 +15,7 @@ function DisconnectGoogle(req, res) {
         models.UserGoogle.destroy({
             where: {userId: req.user.id}
         })
-            .then(function (result) {
+            .then((result) => {
                 return res.redirect('/users/me')
             })
             .catch((err) => {

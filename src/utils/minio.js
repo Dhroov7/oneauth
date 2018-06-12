@@ -10,13 +10,13 @@ const minioClient = new AWS.S3 ({
     signatureVersion: 'v4'
 })
 
-function deleteObject(bucket, key) {
+let deleteObject = (bucket, key) => {
     if (typeof bucket !== 'string') {
         throw new Error('bucket not a string')
     } else if (typeof bucket !== 'string') {
         throw new Error('key not a string')
     }
-    minioClient.deleteObject({Bucket: bucket, Key: key},function (err, data) {
+    minioClient.deleteObject({Bucket: bucket, Key: key}, (err, data) => {
       if (err) {
         Raven.captureException(err)
         throw err;

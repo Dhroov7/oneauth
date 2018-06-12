@@ -9,39 +9,39 @@ const models = require('../../db/models').models
 
 router.get('/me',
     cel.ensureLoggedIn('/login'),
-    function (req, res, next) {
+     (req, res, next) => {
         models.Client.findAll({
             where: {userId: req.user.id}
-        }).then(function (clients) {
+        }).then((clients) => {
             return res.render('client/all', {clients: clients})
-        }).catch(function (err) {
+        }).catch( (err) => {
             res.send("No clients registered")
         })
     }
 )
 
-router.get('/',acl.ensureAdmin,function (req,res,next) {
+router.get('/',acl.ensureAdmin,(req,res,next) => {
     models.Client.findAll({})
-        .then(function (clients) {
+        .then((clients) => {
             return res.render('client/all',{clients:clients})
-        }).catch(function(err){
+        }).catch((err) => {
             res.send("No clients Registered")
     })
 })
 
 router.get('/add',
     cel.ensureLoggedIn('/login'),
-    function (req, res, next) {
+    (req, res, next) => {
         return res.render('client/add')
     }
 )
 
 router.get('/:id',
     cel.ensureLoggedIn('/login'),
-    function (req, res, next) {
+    (req, res, next) => {
         models.Client.findOne({
             where: {id: req.params.id}
-        }).then(function (client) {
+        }).then( (client) => {
             if (!client) {
                 return res.send("Invalid Client Id")
             }
@@ -57,10 +57,10 @@ router.get('/:id',
 
 router.get('/:id/edit',
     cel.ensureLoggedIn('/login'),
-    function (req, res, next) {
+    (req, res, next) => {
         models.Client.findOne({
             where: {id: req.params.id}
-        }).then(function (client) {
+        }).then((client) => {
             if (!client) {
                 return res.send("Invalid Client Id")
             }
