@@ -35,14 +35,8 @@ module.exports = new TwitterStrategy({
 
         if(userTwitter){
             if(req.isAuthenticated()){
-                let Ids = ''
-                for(let i=0;i<userTwitter.length;i++){
-                    Ids += userTwitter[i].dataValues.id
-                    if(i<userTwitter.length-1){
-                        Ids += ','
-                    }
-                }
-                return cb(null,false,{message:'Sorry,this Twitter account is connected with another coding blocks account: ' + Ids})
+                let oldIds = userTwitter.map((uf) => uf.id).join(',')
+                return cb(null,false,{message:'Sorry,this Twitter account is connected with another coding blocks account: ' + oldIds})
             }
             return cb(null,false,{message:'Email ID already exists.Please login to connect with github.'})
         }

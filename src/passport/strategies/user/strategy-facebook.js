@@ -39,14 +39,8 @@ module.exports = new FacebookStrategy({
 
         if(userFacebook){
             if(req.isAuthenticated()){
-                let Ids = ''
-                for(let i=0;i<userFacebook.length;i++){
-                    Ids += userFacebook[i].dataValues.id
-                    if(i<userFacebook.length-1){
-                        Ids += ','
-                    }
-                }
-                return cb(null,false,{message:'Sorry,this facebook account is connected with another coding blocks account: ' + Ids})
+                let oldIds = userFacebook.map((uf) => uf.id).join(',')
+                return cb(null,false,{message:'Sorry,this facebook account is connected with another coding blocks account: ' + oldIds})
             }
             return cb(null,false,{message:'Email ID already exists.Please login to connect with Facebook.'})
         }

@@ -29,14 +29,8 @@ module.exports = new GoogleStrategy({
 
             if(userGoogle){
                 if(req.isAuthenticated()){
-                    let Ids = ''
-                    for(let i=0;i<userGoogle.length;i++){
-                        Ids += userGoogle[i].dataValues.id
-                        if(i<userGoogle.length-1){
-                            Ids += ','
-                        }
-                    }
-                    return cb(null,false,{message:'Sorry,this facebook account is connected with another coding blocks account: ' + Ids})
+                    let oldIds = userGoogle.map((uf) => uf.id).join(',')
+                    return cb(null,false,{message:'Sorry,this facebook account is connected with another coding blocks account: ' + oldIds})
                 }
                 return cb(null,false,{message:'Email ID already exists.Please login to connect with github.'})
             }
