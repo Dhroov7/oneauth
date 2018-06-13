@@ -27,27 +27,22 @@ module.exports = new TwitterStrategy({
     Raven.setContext({extra: {file: 'twitterstrategy'}})
 
     try {
-        const userTwitter = await  models.User.findAll({
-            where:{
-                email:profileJson.email
-            }
-        })
-
-        if(userTwitter){
-            if(req.isAuthenticated()){
-                let oldIds = userTwitter.map((uf) => uf.id).join(',')
-                return cb(null,false,{message:'Sorry,this Twitter account is connected with another coding blocks account: ' + oldIds})
-            }
-            return cb(null,false,{message:'Email ID already exists.Please login to connect with github.'})
-        }
-
         if (oldUser) {
             debug('User exists, is connecting Twitter account')
 
-            const twaccount = await models.UserTwitter.findOne({where: {id: profileJson.id}})
-            if (twaccount) {
-                throw new Error('Your Twitter account is already linked with coding blocks account Id: ' + twaccount.dataValues.userId)
-            } else {
+            const userTwitter = await  models.User.findAll({
+                where:{
+                    email:profileJson.email
+                }
+            })
+
+            if(userTwitter.length > 0){
+                if(req.isAuthenticated()){
+                    let oldIds = userTwitter.map((uf) => uf.id).join(',')
+                    return cb(null,false,{message:'Sorry,this Twitter account is connected with another coding blocks account: ' + oldIds})
+                }
+                return cb(null,false,{message:'Email ID already exists.Please login to connect with github.'})
+            }else{
                 const updated = await models.UserTwitter.upsert({
                     id: profileJson.id,
                     token: token,
@@ -62,7 +57,6 @@ module.exports = new TwitterStrategy({
                     return cb(null, false, {message: "Could not retrieve existing Twitter linked account"})
                 }
             }
-
         } else { //new user
             debug('Creating new user with Twitter')
 

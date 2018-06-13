@@ -31,25 +31,20 @@ module.exports = new FacebookStrategy({
     Raven.setContext({extra: {file: 'fbstrategy'}})
     const span = tracer.startSpan('passport.strategy.facebook')
     try{
-        const userFacebook = await  models.User.findAll({
-            where:{
-                email:profileJson.email
-            }
-        })
-
-        if(userFacebook){
-            if(req.isAuthenticated()){
-                let oldIds = userFacebook.map((uf) => uf.id).join(',')
-                return cb(null,false,{message:'Sorry,this facebook account is connected with another coding blocks account: ' + oldIds})
-            }
-            return cb(null,false,{message:'Email ID already exists.Please login to connect with Facebook.'})
-        }
-
         if(oldUser){
-            const fbaccount = await  models.UserFacebook.findOne({where: {id: profileJson.id}})
+            const userFacebook = await  models.User.findAll({
+                where:{
+                    email:profileJson.email
+                }
+            })
 
-            if (fbaccount) {
-                throw new Error('Your Facebook account is already linked with codingblocks account Id: ' + fbaccount.dataValues.userId)
+            if(userFacebook.length > 0){
+                let oldIds = ''
+                if(req.isAuthenticated()){
+                    oldIds = userFacebook.map((uf) => uf.id).join(',')
+                    return cb(null,false,{message:'Sorry,this facebook account is connected with another coding blocks account: ' + oldIds})
+                }
+                return cb(null,false,{message:'Email ID already exists.Please login to connect with Facebook.'})
             }else{
                 const updated = await models.UserFacebook.upsert({
                     id: profileJson.id,
@@ -76,7 +71,7 @@ module.exports = new FacebookStrategy({
                     })
                     return cb(null, user.get())
                 }else{
-                    return cb(err, null,{message: "Could not retrieve existing Twitter linked account"})
+                    return cb(err, null,{message: "Could not retrieve existing Facebook linked account"})
                 }
             }
         }else{

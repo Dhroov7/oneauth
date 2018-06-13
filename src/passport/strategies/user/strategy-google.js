@@ -21,26 +21,22 @@ module.exports = new GoogleStrategy({
         Raven.setContext({extra: {file: 'googlestrategy'}})
         try {
 
-            const userGoogle = await  models.User.findAll({
-                where:{
-                    email:profileJson.email
-                }
-            })
-
-            if(userGoogle){
-                if(req.isAuthenticated()){
-                    let oldIds = userGoogle.map((uf) => uf.id).join(',')
-                    return cb(null,false,{message:'Sorry,this facebook account is connected with another coding blocks account: ' + oldIds})
-                }
-                return cb(null,false,{message:'Email ID already exists.Please login to connect with github.'})
-            }
-
             if (oldUser) {
                 debug('User exists, is connecting Google account')
-                const glaccount = await  models.UserGoogle.findOne({where: {id: profileJson.id}})
-                if (glaccount) {
-                    throw new Error('Your Google account is already linked with codingblocks account Id: ' + glaccount.dataValues.userId)
-                } else {
+
+                const userGoogle = await  models.User.findAll({
+                    where:{
+                        email:profileJson.email
+                    }
+                })
+
+                if(userGoogle.length > 0){
+                    if(req.isAuthenticated()){
+                        let oldIds = userGoogle.map((uf) => uf.id).join(',')
+                        return cb(null,false,{message:'Sorry,this facebook account is connected with another coding blocks account: ' + oldIds})
+                    }
+                    return cb(null,false,{message:'Email ID already exists.Please login to connect with github.'})
+                }else{
                     const updated = await models.UserGoogle.upsert({
                         id: profileJson.id,
                         accessToken: accessToken,

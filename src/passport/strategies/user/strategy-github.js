@@ -26,25 +26,21 @@ module.exports = new GithubStrategy({
     Raven.setContext({extra: {file: 'githubstrategy'}})
     try{
 
-        const userGithub = await  models.User.findAll({
-            where:{
-                email:profileJson.email
-            }
-        })
-
-        if(userGithub){
-            if(req.isAuthenticated()){
-                let oldIds = userGithub.map((uf) => uf.id).join(',')
-                return cb(null,false,{message:'Sorry,this facebook account is connected with another coding blocks account: ' + oldIds})
-            }
-            return cb(null,false,{message:'Email ID already exists.Please login to connect with github.'})
-        }
-
         if(oldUser){
+            const userGithub = await  models.User.findAll({
+                where:{
+                    email:profileJson.email
+                }
+            })
+
             debug('User exists, is connecting Github account')
-            const ghaccount =  await models.UserGithub.findOne({where: {id: profileJson.id}})
-            if (ghaccount) {
-                throw new Error('Your Github account is already linked with codingblocks account Id: ' + ghaccount.dataValues.userId)
+
+            if(userGithub.length > 0){
+                if(req.isAuthenticated()){
+                    let oldIds = userGithub.map((uf) => uf.id).join(',')
+                    return cb(null,false,{message:'Sorry,this facebook account is connected with another coding blocks account: ' + oldIds})
+                }
+                return cb(null,false,{message:'Email ID already exists.Please login to connect with github.'})
             }else{
                 const updated = await models.UserGithub.upsert({
                     id: profileJson.id,
@@ -61,6 +57,12 @@ module.exports = new GithubStrategy({
                 }else{
                     return cb(null, false, {message: "Could not retrieve existing Github linked account"})
                 }
+            }
+
+            if (ghaccount) {
+                throw new Error('Your Github account is already linked with codingblocks account Id: ' + ghaccount.dataValues.userId)
+            }else{
+
             }
         }else{
             const existCount = await models.User.count({where: {username: profileJson.login}})
