@@ -87,6 +87,7 @@ const Client = db.define('client', {
     name: Sequelize.DataTypes.STRING,
     secret: Sequelize.DataTypes.STRING,
     domain: Sequelize.DataTypes.ARRAY(Sequelize.DataTypes.STRING),
+    defaultURL: {type: Sequelize.DataTypes.STRING,allowNull:false,default: 'www.google.com'},
     callbackURL: Sequelize.DataTypes.ARRAY(Sequelize.DataTypes.STRING),
     trusted: {type: Sequelize.DataTypes.BOOLEAN, default: false}
 

@@ -17,6 +17,7 @@ router.post('/add', function (req, res) {
 
     let clientName = req.body.clientname
     let clientDomains = req.body.domain.replace(/ /g, '').split(';')
+    let defaultURL = req.body.defaultURL
     let clientCallbacks = req.body.callback.replace(/ /g, '').split(';')
 
     //Make sure all urls have http in them
@@ -27,12 +28,15 @@ router.post('/add', function (req, res) {
         arr[i] = urlutils.prefixHttp(url)
     })
 
+    defaultURL = urlutils.prefixHttp(defaultURL)
+
 
     models.Client.create({
         id: generator.genNdigitNum(10),
         secret: generator.genNcharAlphaNum(64),
         name: clientName,
         domain: clientDomains,
+        defaultURL:defaultURL,
         callbackURL: clientCallbacks,
         userId: req.user.id
     }).then(function (client) {
@@ -45,6 +49,7 @@ router.post('/edit/:id', cel.ensureLoggedIn('/login'),
         let clientId = parseInt(req.params.id)
         let clientName = req.body.clientname
         let clientDomains = req.body.domain.replace(/ /g, '').split(';')
+        let defaultURL = req.body.defaultURL
         let clientCallbacks = req.body.callback.replace(/ /g, '').split(';')
         let trustedClient = false
         if(req.user.role === 'admin'){
@@ -59,9 +64,12 @@ router.post('/edit/:id', cel.ensureLoggedIn('/login'),
             arr[i] = urlutils.prefixHttp(url)
         })
 
+        defaultURL = urlutils.prefixHttp(defaultURL)
+
         models.Client.update({
             name: clientName,
             domain: clientDomains,
+            defaultURL:defaultURL,
             callbackURL: clientCallbacks,
             trusted:trustedClient
         }, {

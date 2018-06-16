@@ -27,6 +27,10 @@
                     <td>{{domain}}</td>
                 </tr>
             {{/each}}
+            <tr>
+                <th> Client Default URL</th>
+                <td> {{client.defaultURL}}</td>
+            </tr>
             {{#each client.callbackURL as |callback|}}
                 <tr>
                     <th>Callback URL</th>
