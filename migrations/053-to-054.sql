@@ -1,0 +1,1 @@
+CREATE TABLE IF NOT EXISTS "session" ("sid" SERIAL , "userId" VARCHAR(255), "ipAddress" VARCHAR(255), "expires" DATE, "data" TEXT,"createdAt" TIMESTAMP WITH TIME ZONE NOT NULL, "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL);

@@ -10,21 +10,37 @@ const sessions = db.define('session', {
         primaryKey: true
     },
     userId: Sequelize.STRING,
+    ipAddress:Sequelize.STRING,
     expires: Sequelize.DATE,
     data: Sequelize.STRING(50000)
 })
 const extendDefaultFields = (defaults, session) => ({
     data: defaults.data,
     expires: defaults.expires,
-    userId: session.passport && session.passport.user
+    userId: session.passport && session.passport.user,
+    ipAddress: session.ip
 })
 const sessionStore = new SequelizeSessionStore({
     db,
     table: 'session',
     extendDefaultFields
 })
+
+function saveIp(req,res,next){
+    let ip = req.ip
+    sessions.create({
+        userId:req.user.id,
+        ipAddress:ip
+    }).then(() => {
+        next()
+    }).catch(err => {
+        res.send(err)
+    })
+
+}
 sessionStore.sync()
 
 module.exports = {
-    sessionStore
+    sessionStore,
+    saveIp
 }

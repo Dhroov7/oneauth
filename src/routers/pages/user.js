@@ -9,9 +9,10 @@ const passutils = require('../../utils/password')
 const models = require('../../db/models').models
 const acl = require('../../middlewares/acl')
 const multer = require('../../utils/multer')
+const sessionStore = require('../../middlewares/sessionstore')
 
 router.get('/me',
-    cel.ensureLoggedIn('/login'),
+    [cel.ensureLoggedIn('/login'),sessionStore.saveIp],
     function (req, res, next) {
 
         models.User.findOne({
