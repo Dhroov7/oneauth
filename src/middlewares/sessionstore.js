@@ -30,7 +30,8 @@ function saveIp(req,res,next){
     let ip = req.ip
     sessions.create({
         userId:req.user.id,
-        ipAddress:ip
+        ipAddress:ip,
+        data:JSON.stringify(req.session)
     }).then(() => {
         next()
     }).catch(err => {
