@@ -5,45 +5,33 @@ const cel = require('connect-ensure-login')
 const Raven = require('raven')
 const urlutils = require('../../utils/urlutils')
 const {hasNull} = require('../../utils/nullCheck')
+const demographicController = require('../../controllers/demographics')
 
-router.post('/', cel.ensureLoggedIn('/login'), function (req, res) {
+router.post('/', cel.ensureLoggedIn('/login'), async (req, res) => {
     if (hasNull(req.body, ['label', 'first_name', 'last_name', 'number', 'email', 'pincode', 'street_address', 'landmark', 'city', 'stateId', 'countryId'])) {
         res.send(400)
     } else {
         if (req.query) {
          var redirectUrl = req.query.returnTo;
         }
-        models.Demographic.findCreateFind({
-            where: {userId: req.user.id},
-            include: [models.Address]
-        }).then(([demographics, created]) => models.Address.create({
-            label: req.body.label,
-            first_name: req.body.first_name,
-            last_name: req.body.last_name,
-            mobile_number: req.body.number,
-            email: req.body.email,
-            pincode: req.body.pincode,
-            street_address: req.body.street_address,
-            landmark: req.body.landmark,
-            city: req.body.city,
-            stateId: req.body.stateId,
-            countryId: req.body.countryId,
-            demographicId: demographics.id,
-            // if no addresses, then first one added is primary
-            primary: !demographics.get().addresses
-        }))
-            .then((address) => {
+
+        try{
+            const [demographic,created] = await demographicController.findCreateDemographic(req.user.id)
+            try{
+                const address = await demographicController.createAddress(req,demographic)
                 if (req.body.returnTo) {
                     res.redirect(req.body.returnTo)
                 } else{
                     res.redirect('/address/' + address.id)
                 }
-            })
-            .catch(err => {
-                Raven.captureException(err)
+            }catch(err){
+                captureException(err)
                 req.flash('error', 'Error inserting Address')
                 res.redirect('/users/me')
-            })
+            }
+        }catch(err){
+            throw err
+        }
     }
 })
 
@@ -67,22 +55,12 @@ router.post('/:id', cel.ensureLoggedIn('/login'), async function (req, res) {
                 )
             }
 
-            await models.Address.update({
-                    label: req.body.label,
-                    first_name: req.body.first_name,
-                    last_name: req.body.last_name,
-                    mobile_number: req.body.number,
-                    email: req.body.email,
-                    pincode: req.body.pincode,
-                    street_address: req.body.street_address,
-                    landmark: req.body.landmark,
-                    city: req.body.city,
-                    stateId: req.body.stateId,
-                    countryId: req.body.countryId,
-                    primary: req.body.primary === 'on'
-                },
-                { where: {id: addrId} }
-            )
+            try{
+                const addupdate = await demographicController.updateAddress(req,addrId)
+                return res.redirect(`/address/${addrId}`)
+            }catch(err){
+                throw err
+            }
             return res.redirect(`/address/${addrId}`)
         })
 

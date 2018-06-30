@@ -9,67 +9,43 @@ const passutils = require('../../utils/password')
 const models = require('../../db/models').models
 const acl = require('../../middlewares/acl')
 const multer = require('../../utils/multer')
+const userController = require('../../controllers/user')
+const demographicsController = require('../../controllers/demographics')
 
 router.get('/me',
     cel.ensureLoggedIn('/login'),
-    function (req, res, next) {
-
-        models.User.findOne({
-            where: {id: req.user.id},
-            include: [
-                models.UserGithub,
-                models.UserGoogle,
-                models.UserFacebook,
-                models.UserLms,
-                models.UserTwitter,
-                {
-                    model: models.Demographic,
-                    include: [
-                        models.College,
-                        models.Branch,
-                        models.Company,
-                    ]
-                }
-            ]
-        }).then(function (user) {
-            if (!user) {
-                res.redirect('/login')
+    async (req, res, next) => {
+        try{
+            let includes = []
+            includes.push(models.UserTwitter,models.UserGoogle,models.UserGithub,models.UserFacebook,{model:models.Demographic,include:[models.College,models.Branch,models.Company]})
+            const user = await userController.getUserById(req.user.id,includes)
+            if(!user){
+               return res.redirect('/login')
             }
-            return res.render('user/me', {user: user})
-        }).catch(function (err) {
+            return res.render('user/me', {user:user})
+        }catch(err){
             throw err
-        })
+        }
 
     })
 
 router.get('/me/edit',
     cel.ensureLoggedIn('/login'),
-    function (req, res, next) {
-        Promise.all([
-            models.User.findOne({
-                where: {id: req.user.id},
-                include: [
-                    {
-                        model: models.Demographic,
-                        include: [
-                            models.College,
-                            models.Branch,
-                            models.Company,
-                        ]
-                    }
-                ]
-            }),
-            models.College.findAll({}),
-            models.Branch.findAll({})
-        ]).then(function ([user, colleges, branches]) {
-            if (!user) {
-                res.redirect('/login')
+    async (req, res, next) => {
+
+        let includes = []
+        includes.push({model:models.Demographic,include:[models.College,models.Branch,models.Company]})
+        try{
+            const user = await userController.getUserById(req.user.id,includes)
+            const colleges = await demographicsController.getColleges()
+            const branches = await demographicsController.getBranches()
+            if(!user){
+                return res.redirect('/login')
             }
             return res.render('user/me/edit', {user, colleges, branches})
-        }).catch(function (err) {
+        }catch(err){
             throw err
-        })
-
+        }
     }
 )
 
@@ -107,10 +83,9 @@ router.post('/me/edit',
         }
 
         try {
-            const user = await models.User.findOne({
-                where: {id: req.user.id},
-                include: [models.Demographic]
-            })
+            let includes = []
+            includes.push(models.Demographic)
+            const user = await userController.getUserById(req.user.id,includes)
             const demographic = user.demographic || {};
             
             user.firstname = req.body.firstname
@@ -156,7 +131,7 @@ router.post('/me/edit',
                     where: {userId: req.user.id}
                 })
             }
-            res.redirect('/users/me')
+            return res.redirect('/users/me')
         } catch (err) {
             Raven.captureException(err)
             req.flash('error', 'Error in Server')
@@ -168,65 +143,48 @@ router.post('/me/edit',
 router.get('/:id',
     cel.ensureLoggedIn('/login'),
     acl.ensureRole('admin'),
-    function (req, res, next) {
-
-        models.User.findOne({
-            where: {id: req.params.id},
-            include: [
-                models.UserGithub,
-                models.UserGoogle,
-                models.UserFacebook,
-                models.UserLms,
-                models.UserTwitter
-            ]
-        }).then(function (user) {
-            if (!user) {
+    async (req, res, next) => {
+        let includes = []
+        includes.push(models.UserFacebook,models.UserGithub,models.UserGoogle,models.UserLms,models.UserTwitter)
+        try{
+            const user = await userController.getUserById(req.params.id,includes)
+            if(!user){
                 return res.status(404).send({error: "Not found"})
             }
-            return res.render('user/id', {user: user})
-        }).catch(function (err) {
+            return res.render('user/id',{user:user})
+        }catch(err){
             throw err
-        })
+        }
     }
 )
 
 router.get('/:id/edit',
     cel.ensureLoggedIn('/login'),
     acl.ensureRole('admin'),
-    function (req, res, next) {
-
-        models.User.findOne({
-            where: {id: req.params.id},
-        }).then(function (user) {
-            if (!user) {
-                return res.status(404).send({error: "Not found"})
-            }
-            return res.render('user/id/edit', {user: user})
-        }).catch(function (err) {
-            throw err
-        })
+    async (req, res, next) => {
+    try{
+           const user = await userController.getUserById(req.params.id, {})
+           if(!user){
+               return res.status(404).send({error: "Not found"})
+           }
+           return res.render('user/id/edit',{user:user})
+       }catch(err){
+           throw err
+       }
     }
 )
 
 router.post('/:id/edit',
     cel.ensureLoggedIn('/login'),
     acl.ensureRole('admin'),
-    function (req, res, next) {
+    async (req, res, next) => {
 
-        models.User.update({
-                firstname: req.body.firstname,
-                lastname: req.body.lastname,
-                email: req.body.email,
-                role: req.body.role !== 'unchanged' ? req.body.role : undefined
-            },
-            {
-                where: {id: req.params.id},
-                returning: true
-            }).then(function (result) {
+        try{
+            const updatedUser = userController.updateUser(req)
             return res.redirect('../' + req.params.id)
-        }).catch(function (err) {
+        }catch(err){
             throw err
-        })
+        }
     }
 )
 

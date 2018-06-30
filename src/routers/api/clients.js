@@ -7,10 +7,11 @@ const router = require('express').Router()
 const models = require('../../db/models').models
 const generator = require('../../utils/generator')
 const cel = require('connect-ensure-login')
+const clientController = require('../../controllers/client')
 
 const urlutils = require('../../utils/urlutils')
 
-router.post('/add', function (req, res) {
+router.post('/add', async (req, res) => {
     if (!req.user) {
         return res.status(403).send("Only logged in users can make clients")
     }
@@ -29,22 +30,16 @@ router.post('/add', function (req, res) {
         arr[i] = urlutils.prefixHttp(url)
     })
 
-
-    models.Client.create({
-        id: generator.genNdigitNum(10),
-        secret: generator.genNcharAlphaNum(64),
-        name: clientName,
-        domain: clientDomains,
-        defaultURL: defaultURL,
-        callbackURL: clientCallbacks,
-        userId: req.user.id
-    }).then(function (client) {
+    try{
+        const client = await clientController.createClient(req,clientName,clientDomains,defaultURL,clientCallbacks)
         res.redirect('/clients/' + client.id)
-    }).catch(err => console.log(err))
+    }catch(err){
+        console.log(err)
+    }
 })
 
 router.post('/edit/:id', cel.ensureLoggedIn('/login'),
-    function (req, res) {
+    async (req, res) => {
         let clientId = parseInt(req.params.id)
         let clientName = req.body.clientname
         let clientDomains = req.body.domain.replace(/ /g, '').split(';')
@@ -63,20 +58,12 @@ router.post('/edit/:id', cel.ensureLoggedIn('/login'),
             arr[i] = urlutils.prefixHttp(url)
         })
 
-        models.Client.update({
-            name: clientName,
-            domain: clientDomains,
-            defaultURL: defaultURL,
-            callbackURL: clientCallbacks,
-            trusted:trustedClient
-        }, {
-            where: {id: clientId}
-        }).then(function (client) {
-            res.redirect('/clients/' + clientId)
-        }).catch(function (error) {
-            console.error(error)
-        })
-
+        try{
+            const client = await clientController.updateClient(clientName,clientDomains,defaultURL,clientCallbacks,trustedClient)
+            return res.redirect('/clients/' + clientId)
+        }catch(err){
+            console.log(err)
+        }
     })
 
 

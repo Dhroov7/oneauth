@@ -7,13 +7,13 @@ const router = require('express').Router()
 const cel = require('connect-ensure-login')
 const passport = require('../../passport/passporthandler')
 const models = require('../../db/models').models
+const userController = require('../../controllers/user')
 
 
 router.get('/me',
     // Frontend clients can use this API via session (using the '.codingblocks.com' cookie)
     passport.authenticate(['bearer', 'session']),
-    function (req, res) {
-
+    async (req, res) => {
         if (req.user && !req.authInfo.clientOnly && req.user.id) {
             let includes = []
             if (req.query.include) {
@@ -39,18 +39,17 @@ router.get('/me',
                 }
             }
 
-
-            models.User.findOne({
-                where: {id: req.user.id},
-                include: includes
-            }).then(function (user) {
-                if (!user) {
+            try{
+                const user = await userController.getUserById(req.user.id,includes)
+                if(!user){
                     throw new Error("User not found")
                 }
-                res.send(user)
-            }).catch(function (err) {
-                res.send('Unknown user or unauthorized request')
-            })
+
+                return res.send(user)
+
+            }catch(err){
+                return res.send('Unknown user or unauthorized request')
+            }
 
         } else {
             return res.status(403).json({error: 'Unauthorized'})
@@ -61,7 +60,7 @@ router.get('/me',
 router.get('/me/address',
     // Frontend clients can use this API via session (using the '.codingblocks.com' cookie)
     passport.authenticate(['bearer', 'session']),
-    function (req, res) {
+    async (req, res) => {
         if (req.user && req.user.id) {
             let includes = [{model: models.Demographic,
             include: [models.Address]
@@ -90,18 +89,17 @@ router.get('/me/address',
             }
 
 
-            models.User.findOne({
-                where: {id: req.user.id},
-                include: includes
-            }).then(function (user) {
-                console.log(user)
-                if (!user) {
+            try{
+                const user = await userController.getUserById(req.user.id,includes)
+                if(!user){
                     throw new Error("User not found")
                 }
-                res.send(user)
-            }).catch(function (err) {
-                res.send('Unknown user or unauthorized request')
-            })
+
+                return res.send(user)
+
+            }catch(err){
+                return res.send('Unknown user or unauthorized request')
+            }
 
         } else {
             return res.sendStatus(403)
@@ -142,19 +140,15 @@ router.get('/:id',
             }
         }
         let trustedClient = req.client && req.client.trusted
-        models.User.findOne({
-            // Public API should expose only id, username and photo URL of users
-            // But for trusted clients we will pull down our pants
-            attributes: trustedClient ? undefined: ['id', 'username', 'photo'],
-            where: {id: req.params.id}
-        }).then(function (user) {
-            if (!user) {
+        try{
+            const user = userController.getUserForTrustedClient(req.params.id,trustedClient)
+            if(!user){
                 throw new Error("User not found")
             }
-            res.send(user)
-        }).catch(function (err) {
-            res.send('Unknown user or unauthorized request')
-        })
+            return res.send(user)
+        }catch(err){
+            return res.send('Unknown user or unauthorized request')
+        }
     }
 )
 router.get('/:id/address',

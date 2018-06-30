@@ -9,6 +9,8 @@ const models = require('../db/models').models
     , passport = require('../passport/passporthandler')
     , config = require('../../config')
     , debug = require('debug')('oauth:oauthserver')
+    ,clientController = require('../controllers/client')
+    ,authTokenController = require('../controllers/authTokens')
 
 const server = oauth.createServer()
 
@@ -16,12 +18,13 @@ server.serializeClient(function (client, done) {
     return done(null, client.id)
 })
 
-server.deserializeClient(function (clientId, done) {
-    models.Client.findOne({
-        where: {id: clientId}
-    }).then(function (client) {
-        return done(null, client)
-    }).catch(err => debug(err))
+server.deserializeClient(async (clientId, done) =>{
+    try{
+        const client = await clientController.findOneClient(clientId)
+        return done(null,client)
+    }catch(err){
+        debug(err)
+    }
 })
 
 /**
@@ -29,35 +32,28 @@ server.deserializeClient(function (clientId, done) {
  * that has to be exchanged for an access token later
  */
 server.grant(oauth.grant.code(
-    function (client, redirectURL, user, ares, done) {
+    async (client, redirectURL, user, ares, done) =>{
         debug('oauth: getting grant code for ' + client.id + ' and ' + user.id)
-        models.GrantCode.create({
-            code: generator.genNcharAlphaNum(config.GRANT_TOKEN_SIZE),
-            clientId: client.id,
-            userId: user.id
-        }).then(function (grantCode) {
+        try{
+            const grantCode = await authTokenController.createGrandCode(client.id,user.id)
             return done(null, grantCode.code)
-        }).catch(function (err) {
+        }catch(err){
             return done(err)
-        })
+        }
     }
 ))
 /**
  * Generate refresh token
  */
 server.grant(oauth.grant.token(
-    function (client, user, ares, done) {
-        models.AuthToken.create({
-            token: generator.genNcharAlphaNum(config.AUTH_TOKEN_SIZE),
-            scope: ['*'],
-            explicit: false,
-            clientId: client.id,
-            userId: user.id
-        }).then(function (authToken) {
+    async (client, user, ares, done) => {
+
+        try{
+            const authToken = await authTokenController.createAuthToken(client.id,user.id)
             return done(null, authToken.token)
-        }).catch(function (err) {
+        }catch(err){
             return done(err)
-        })
+        }
 
     }
 ))
@@ -66,50 +62,36 @@ server.grant(oauth.grant.token(
  * Exchange **grant code** to get access token
  */
 server.exchange(oauth.exchange.code(
-    function (client, code, redirectURI, done) {
+    async (client, code, redirectURI, done) => {
         debug('oneauth: exchange')
-        models.GrantCode.findOne({
-            where: {code: code},
-            include: [models.Client]
-        }).then(function (grantCode) {
+        try{
+            const grantCode = await authTokenController.findGrantCode(code)
             if (!grantCode) {
-                return done(null, false) // Grant code does not exist
-            }
-            if (client.id !== grantCode.client.id) {
-                return done(null, false) //Wrong Client ID
-            }
-            let callbackMatch = false
-            for (url of client.callbackURL) {
-                if (redirectURI.startsWith(url)) callbackMatch = true
-            }
-            if (!callbackMatch) {
-                return done(null, false) // Wrong redirect URI
-            }
+                        return done(null, false) // Grant code does not exist
+                    }
+                    if (client.id !== grantCode.client.id) {
+                        return done(null, false) //Wrong Client ID
+                    }
+                    let callbackMatch = false
+                    for (url of client.callbackURL) {
+                        if (redirectURI.startsWith(url)) callbackMatch = true
+                    }
+                    if (!callbackMatch) {
+                        return done(null, false) // Wrong redirect URI
+                    }
 
-            models.AuthToken.findCreateFind({
-                where: {
-                    clientId: grantCode.clientId,
-                    userId: grantCode.userId,
-                    explicit: true
-                },
-                defaults: {
-                    token: generator.genNcharAlphaNum(config.AUTH_TOKEN_SIZE),
-                    scope: ['*'],
-                    explicit: true,
-                    clientId: grantCode.clientId,
-                    userId: grantCode.userId
-                }
-            }).spread(function (authToken, created) {
-                return done(null, authToken.token)
-            }).catch(function (err) {
-                return done(err)
-            })
-
-            //Make sure to delete the grant code
-            //so it cannot be reused
-            grantCode.destroy()
-
-        }).catch(err => debug(err))
+                    try{
+                        const [authToken,created] = await authTokenController.findCreateAuthToken(grantCode)
+                        //Make sure to delete the grant code
+                        //so it cannot be reused
+                        grantCode.destroy()
+                        return done(null, authToken.token)
+                    }catch(err){
+                        return done(err)
+                    }
+        }catch(err){
+            debug(err)
+        }
     }
 ))
 
@@ -117,43 +99,40 @@ server.exchange(oauth.exchange.code(
 
 const authorizationMiddleware = [
     cel.ensureLoggedIn('/login'),
-    server.authorization(function (clientId, callbackURL, done) {
+    server.authorization(async (clientId, callbackURL, done) => {
         debug('oauth: authorize')
-        models.Client.findOne({
-            where: {id: clientId}
-        }).then(function (client) {
-            if (!client) {
+        try{
+            const client = await clientController.findOneClient(clientId)
+            if(!client){
                 return done(null, false)
             }
             debug(callbackURL)
             // We validate that callbackURL matches with any one registered in DB
-            for (url of client.callbackURL) {
-                if (callbackURL.startsWith(url)) {
-                    return done(null, client, callbackURL)
+                for (url of client.callbackURL) {
+                    if (callbackURL.startsWith(url)) {
+                        return done(null, client, callbackURL)
+                    }
                 }
-            }
             return done(null, false)
-        }).catch(err => debug(err))
-    }, function (client, user, done) {
+        }catch(err){
+            debug(err)
+        }
+    }, async (client, user, done) => {
         // Auto approve if this is trusted client
         if (client.trusted) {
             return done(null, true)
         }
-        models.AuthToken.findOne({
-            where: {
-                clientId: client.id,
-                userId: user.id
-            }
-        }).then(function (authToken) {
-            if (!authToken) {
+
+        try{
+            const authToken = await authTokenController.findAuthToken(client.id,user.id)
+            if(!authToken){
                 return done(null, false)
-            } else {
+            }else{
                 return done(null, true)
             }
-        }).catch(function (err) {
+        }catch(err){
             return done(err)
-        })
-
+        }
     }),
     function (req, res) {
         res.render("authdialog", {
@@ -169,43 +148,34 @@ const authorizationMiddleware = [
 // authorization request for verification. If these values are validated, the
 // application issues an access token on behalf of the client who authorized the code.
 
-server.exchange(oauth.exchange.clientCredentials((client, scope, done) => {
+server.exchange(oauth.exchange.clientCredentials(async (client, scope, done) => {
   // Validate the client
-  models.Client.findOne({
-      where: {id: client.get().id}
-  })
- .then((localClient) => {
-    if (!localClient) {
-        return done(null, false);
+    try{
+        const localClient = await clientController.findOneClient(client.get().id)
+        if (!localClient) {
+                   return done(null, false);
+               }
+                if (localClient.get().secret !== client.get().secret) {
+                    // Password (secret) of client is wrong
+                    return done(null, false);
+                }
+
+                if (!localClient.get().trusted) {
+                    // Client is not trusted
+                    return done(null, false);
+                }
+                // Everything validated, return the token
+                const token = generator.genNcharAlphaNum(config.AUTH_TOKEN_SIZE)
+                // Pass in a null for user id since there is no user with this grant type
+               try{
+                  const Authtoken = await authTokenController.createAuthToken(client.get().id,null)
+                   return done(null , Authtoken.get().token)
+               }catch(err){
+                   return done(err)
+               }
+    }catch(err){
+        return done(err)
     }
-     if (localClient.get().secret !== client.get().secret) {
-         // Password (secret) of client is wrong
-         return done(null, false);
-     }
-
-     if (!localClient.get().trusted) {
-         // Client is not trusted
-         return done(null, false);
-     }
-
-     // Everything validated, return the token
-     const token = generator.genNcharAlphaNum(config.AUTH_TOKEN_SIZE)
-     // Pass in a null for user id since there is no user with this grant type
-     return models.AuthToken.create({
-         token: generator.genNcharAlphaNum(config.AUTH_TOKEN_SIZE),
-         scope: ['*'],
-         explicit: false,
-         clientId: client.get().id,
-         userId: null // This is a client scoped token, so no related user here
-     }).then((Authtoken) => {
-      return done(null , Authtoken.get().token)
-     })
-       .catch((err) => {
-         return done(err)
-     });
- }).catch((err) => {
-     return done(err)
- })
 }));
 
 const decisionMiddleware = [
