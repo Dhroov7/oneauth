@@ -14,7 +14,7 @@ exports = module.exports = {
         })
     },
 
-    updateClient:(clientName,clientDomains,defaultURL,clientCallbacks,trustedClient) => {
+    updateClient:(clientName,clientDomains,defaultURL,clientCallbacks,trustedClient,clientId) => {
         return models.Client.update({
             name: clientName,
             domain: clientDomains,

@@ -25,7 +25,7 @@ router.post('/', cel.ensureLoggedIn('/login'), async (req, res) => {
                     res.redirect('/address/' + address.id)
                 }
             }catch(err){
-                captureException(err)
+                Raven.captureException(err)
                 req.flash('error', 'Error inserting Address')
                 res.redirect('/users/me')
             }

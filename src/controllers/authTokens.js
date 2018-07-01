@@ -1,5 +1,6 @@
 const models = require('../db/models').models
 const generator = require('../utils/generator')
+const config = require('../../config')
 
 exports = module.exports = {
     createAuthToken:(clientId,userId) => {

@@ -13,7 +13,7 @@ exports = module.exports = {
                 firstname: reqQuery.body.firstname,
                 lastname: reqQuery.body.lastname,
                 email: reqQuery.body.email,
-                role: reqQuery.body.role !== 'unchanged' ? req.body.role : undefined
+                role: reqQuery.body.role !== 'unchanged' ? reqQuery.body.role : undefined
             },
             {
                 where: {id: reqQuery.params.id},

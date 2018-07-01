@@ -60,7 +60,7 @@ router.post('/edit/:id', cel.ensureLoggedIn('/login'),
         })
 
         try{
-            const client = await clientController.updateClient(clientName,clientDomains,defaultURL,clientCallbacks,trustedClient)
+            const client = await clientController.updateClient(clientName,clientDomains,defaultURL,clientCallbacks,trustedClient,clientId)
             return res.redirect('/clients/' + clientId)
         }catch(err){
             console.log(err)
