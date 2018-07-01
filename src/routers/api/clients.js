@@ -32,7 +32,8 @@ router.post('/add', async (req, res) => {
 
     try{
         const client = await clientController.createClient(req,clientName,clientDomains,defaultURL,clientCallbacks)
-        res.redirect('/clients/' + client.id)
+        console.log(client)
+        return res.redirect('/clients/' + client.id)
     }catch(err){
         console.log(err)
     }
