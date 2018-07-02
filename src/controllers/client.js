@@ -30,9 +30,9 @@ exports = module.exports = {
         return models.Client.findAll({})
     },
 
-    findOneClient:(reqQuery) => {
+    findOneClient:(clientId) => {
         return models.Client.findOne({
-            where: {id: reqQuery}
+            where: {id: clientId}
         })
     }
 }

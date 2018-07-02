@@ -53,10 +53,10 @@ exports = module.exports = {
         })
     },
 
-    findAddress:(Id,userId) => {
+    findAddress:(id,userId) => {
         return models.Address.findOne({
             where: {
-                id: Id,
+                id: id,
                 '$demographic.userId$': userId
             },
             include: [models.Demographic, models.State, models.Country]
