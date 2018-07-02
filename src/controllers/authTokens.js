@@ -39,7 +39,7 @@ exports = module.exports = {
         })
     },
 
-    createGrandCode: (clientId,userId) => {
+    createGrantCode: (clientId,userId) => {
         return  models.GrantCode.create({
             code: generator.genNcharAlphaNum(config.GRANT_TOKEN_SIZE),
             clientId: clientId,

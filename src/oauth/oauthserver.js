@@ -35,7 +35,7 @@ server.grant(oauth.grant.code(
     async (client, redirectURL, user, ares, done) =>{
         debug('oauth: getting grant code for ' + client.id + ' and ' + user.id)
         try{
-            const grantCode = await authTokenController.createGrandCode(client.id,user.id)
+            const grantCode = await authTokenController.createGrantCode(client.id,user.id)
             return done(null, grantCode.code)
         }catch(err){
             return done(err)
