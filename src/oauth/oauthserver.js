@@ -81,7 +81,7 @@ server.exchange(oauth.exchange.code(
                     }
 
                     try{
-                        const [authToken,created] = await authTokenController.findCreateAuthToken(grantCode)
+                        const [authToken,created] = await authTokenController.findOrCreateAuthToken(grantCode)
                         //Make sure to delete the grant code
                         //so it cannot be reused
                         grantCode.destroy()

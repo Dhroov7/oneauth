@@ -22,7 +22,7 @@ exports = module.exports = {
         })
     },
 
-    findCreateAuthToken:(grantCode) => {
+    findOrCreateAuthToken:(grantCode) => {
         return  models.AuthToken.findCreateFind({
             where: {
                 clientId: grantCode.clientId,
