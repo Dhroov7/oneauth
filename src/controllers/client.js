@@ -34,5 +34,11 @@ exports = module.exports = {
         return models.Client.findOne({
             where: {id: clientId}
         })
+    },
+
+    findAllClientsWithUserId: (userId) => {
+        return  models.Client.findAll({
+                where: {userId: userId}
+            })
     }
 }

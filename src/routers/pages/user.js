@@ -11,6 +11,7 @@ const acl = require('../../middlewares/acl')
 const multer = require('../../utils/multer')
 const userController = require('../../controllers/user')
 const demographicsController = require('../../controllers/demographics')
+const clientController = require('../../controllers/client')
 
 router.get('/me',
     cel.ensureLoggedIn('/login'),
@@ -24,7 +25,7 @@ router.get('/me',
             }
             return res.render('user/me', {user:user})
         }catch(err){
-            throw err
+            return res.send(err)
         }
 
     })
@@ -44,7 +45,7 @@ router.get('/me/edit',
             }
             return res.render('user/me/edit', {user, colleges, branches})
         }catch(err){
-            throw err
+            return res.send(err)
         }
     }
 )
@@ -153,7 +154,7 @@ router.get('/:id',
             }
             return res.render('user/id',{user:user})
         }catch(err){
-            throw err
+            return res.send(err)
         }
     }
 )
@@ -169,7 +170,7 @@ router.get('/:id/edit',
            }
            return res.render('user/id/edit',{user:user})
        }catch(err){
-           throw err
+        return res.send(err)
        }
     }
 )
@@ -183,21 +184,20 @@ router.post('/:id/edit',
             const updatedUser = userController.updateUser(req)
             return res.redirect('../' + req.params.id)
         }catch(err){
-            throw err
+            return res.send(err)
         }
     }
 )
 
 router.get('/me/clients',
     cel.ensureLoggedIn('/login'),
-    function (req, res, next) {
-        models.Client.findAll({
-            where: {userId: req.user.id}
-        }).then(function (clients) {
-            return res.render('client/all', {clients: clients})
-        }).catch(function (err) {
-            res.send("No clients registered")
-        })
+    async (req, res, next) => {
+         try{
+             const clients = await clientController.findAllClientsWithUserId(req.user.id)
+             return res.render('client/all', {clients: clients})
+         }catch(err){
+             return res.send("No clients registered")
+         }
     }
 )
 

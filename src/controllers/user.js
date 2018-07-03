@@ -1,9 +1,9 @@
 const models = require('../db/models').models
 
 exports = module.exports = {
-    getUserById: (reqQueryId,includes) => {
+    getUserById: (userId,includes) => {
         return models.User.findOne({
-            where: {id: reqQueryId},
+            where: {id: userId},
             include: includes
         })
     },
@@ -21,10 +21,14 @@ exports = module.exports = {
         })
     },
 
-    getUserForTrustedClient:(reqQuery,trustedClient) => {
+    getUserForTrustedClient:(userId,trustedClient) => {
         return  models.User.findOne({
             attributes: trustedClient ? undefined: ['id', 'username', 'photo'],
-            where: {id: reqQuery}
+            where: {id: userId}
         })
+    },
+
+    findAllUsersWithEmail: (email) => {
+        return models.User.findAll({where: {email: email}})
     }
 }

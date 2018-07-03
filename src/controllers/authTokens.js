@@ -52,5 +52,12 @@ exports = module.exports = {
             where: {code: code},
             include: [models.Client]
         })
+    },
+
+    findAllAuthTokens:(userId,includes) => {
+        return models.AuthToken.findAll({
+                where: {userId: userId},
+                include: includes
+            })
     }
 }

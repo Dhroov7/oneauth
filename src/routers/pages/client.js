@@ -36,7 +36,7 @@ router.get('/:id',
            }
            return res.render('client/id', {client: client})
        }catch(err){
-           throw err
+           return res.send(err)
        }
     }
 )
@@ -60,7 +60,7 @@ router.get('/:id/edit',
 
            return res.render('client/edit', {client: client})
        }catch(err){
-           throw err
+           return res.send(err)
        }
     }
 )
