@@ -15,8 +15,9 @@ router.get('/login', cel.ensureNotLoggedIn('/'), function (req, res, next) {
 })
 router.get('/signup', cel.ensureNotLoggedIn('/'), async (req, res, next) => {
     try{
-        const colleges = await demographicsController.getColleges()
-        const branches = await demographicsController.getBranches()
+        // const colleges = await demographicsController.getColleges()
+        // const branches = await demographicsController.getBranches()
+        const [colleges,branches] = await Promise.all([demographicsController.getColleges(),demographicsController.getBranches()])
         return res.render('signup', {title: "Signup | OneAuth", colleges:colleges, branches:branches})
     }catch(err){
         return res.send(err)

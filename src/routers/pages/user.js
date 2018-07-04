@@ -17,9 +17,7 @@ router.get('/me',
     cel.ensureLoggedIn('/login'),
     async (req, res, next) => {
         try{
-            let includes = []
-            includes.push(models.UserTwitter,models.UserGoogle,models.UserGithub,models.UserFacebook,{model:models.Demographic,include:[models.College,models.Branch,models.Company]})
-            const user = await userController.getUserById(req.user.id,includes)
+            const user = await userController.getUserById(req.user.id,[models.UserTwitter,models.UserGoogle,models.UserGithub,models.UserFacebook,{model:models.Demographic,include:[models.College,models.Branch,models.Company]}])
             if(!user){
                return res.redirect('/login')
             }
@@ -33,13 +31,8 @@ router.get('/me',
 router.get('/me/edit',
     cel.ensureLoggedIn('/login'),
     async (req, res, next) => {
-
-        let includes = []
-        includes.push({model:models.Demographic,include:[models.College,models.Branch,models.Company]})
         try{
-            const user = await userController.getUserById(req.user.id,includes)
-            const colleges = await demographicsController.getColleges()
-            const branches = await demographicsController.getBranches()
+            const[user,colleges,branches] = await Promise.all([userController.getUserById(req.user.id,[{model:models.Demographic,include:[models.College,models.Branch,models.Company]}]),demographicsController.getColleges(),demographicsController.getBranches()])
             if(!user){
                 return res.redirect('/login')
             }
