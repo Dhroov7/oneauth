@@ -54,20 +54,25 @@ router.post('/:id', cel.ensureLoggedIn('/login'), async function (req, res) {
                     {where: {demographicId: demoId}}
                 )
             }
-
+          
             try{
                 const addupdate = await demographicController.updateAddress(req,addrId)
                 return res.redirect(`/address/${addrId}`)
             }catch(err){
-                throw err
+                return res.send(err)
             }
             return res.redirect(`/address/${addrId}`)
+            if (req.body.returnTo) {
+              return res.redirect(req.body.returnTo)
+            } else {
+              return res.redirect(`/address/${addrId}`)
+            }
         })
 
     } catch (err) {
         Raven.captureException(err)
         req.flash('error', 'Could not update address')
-        res.redirect('/address')
+        return res.redirect('/address')
     }
 
 })
