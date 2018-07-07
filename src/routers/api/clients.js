@@ -58,7 +58,7 @@ router.post('/edit/:id', cel.ensureLoggedIn('/login'),
         clientCallbacks.forEach(function (url, i, arr) {
             arr[i] = urlutils.prefixHttp(url)
         })
-
+  
         try{
             const client = await clientController.updateClient(clientName,clientDomains,defaultURL,clientCallbacks,trustedClient,clientId)
             return res.redirect('/clients/' + clientId)
