@@ -24,8 +24,7 @@ router.get('/add',
     cel.ensureLoggedIn('/login'),
     async (req, res, next) => {
         try{
-            const states = await demographicsController.getStates()
-            const countries = await demographicsController.getCountries()
+            const [states,countries] = await Promise.all([demographicsController.getStates(),demographicsController.getCountries()])
             return res.render('address/add', {states, countries})
         }catch(err){
             return res.send("Error Fetching Data.")
@@ -56,10 +55,7 @@ router.get('/:id/edit',
     cel.ensureLoggedIn('/login'),
     async (req, res, next) => {
         try{
-            const address = await demographicsController.findAddress(req.params.id,req.user.id)
-            const states = await demographicsController.getStates()
-            const countries = await demographicsController.getCountries()
-
+            const [address,states,countries] = await Promise.all([demographicsController.findAddress(req.params.id,req.user.id),demographicsController.getStates(),demographicsController.getCountries()])
             if (!address) {
                 req.flash('error', 'Address not found')
                 return res.redirect('.')
