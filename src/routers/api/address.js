@@ -22,7 +22,7 @@ router.post('/', cel.ensureLoggedIn('/login'), async (req, res) => {
                 if (req.body.returnTo) {
                     res.redirect(req.body.returnTo)
                 } else{
-                    res.redirect('/address/' + address.id)
+                    res.redirect('/address')
                 }
             }catch(err){
                 Raven.captureException(err)

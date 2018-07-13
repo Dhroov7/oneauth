@@ -7,6 +7,7 @@ const demographicsController = require('../../controllers/demographics')
 
 router.get('/',
     cel.ensureLoggedIn('/login'),
+           
     async (req, res, next) => {
 
         try{
