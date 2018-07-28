@@ -115,6 +115,7 @@ router.post('/me/edit',
             
             user.firstname = req.body.firstname
             user.lastname = req.body.lastname
+            user.contactNumber = +req.body.contactNumber
             if (!user.verifiedemail && req.body.email !== user.email) {
                 user.email = req.body.email
             }
