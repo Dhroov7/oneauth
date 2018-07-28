@@ -1,1 +1,1 @@
-ALTER TABLE user ADD COLUMN "contactNumber" VARCHAR(255);
+ALTER TABLE users ADD COLUMN "contactNumber" VARCHAR(255);
