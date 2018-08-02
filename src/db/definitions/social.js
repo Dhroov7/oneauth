@@ -33,6 +33,14 @@ module.exports = {
         username: {type: Sequelize.DataTypes.STRING, allowNull: true}
     },
 
+    linkedin:{
+        id: {type: Sequelize.DataTypes.STRING, primaryKey: true},
+        token: Sequelize.DataTypes.TEXT,
+        tokenSecret: {type: Sequelize.DataTypes.TEXT, allowNull: true},
+        username: Sequelize.DataTypes.STRING,
+        profileLink: Sequelize.DataTypes.STRING
+    },
+
     lms: {
         id: {type: Sequelize.DataTypes.BIGINT, primaryKey: true},
         roll_number: Sequelize.DataTypes.STRING,

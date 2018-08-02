@@ -117,6 +117,18 @@
                         </div>
                     </div>
                 {{/if}}
+                {{#if user.userlinkedin}}
+                    <div id="profile-row-github" class="flex-row">
+                        <div>Linkedin Connected</div>
+                        <div>
+                            <span class="grey">
+                                <a class="grey" target="_blank" href="{{user.userlinkedin.profileLink}}">
+                                    {{user.userlinkedin.username}}
+                                </a>
+                            </span>
+                        </div>
+                    </div>
+                {{/if}}
             </div>
         </div>
     </div>
