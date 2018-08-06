@@ -6,9 +6,8 @@ function DisconnectLinkedin(req, res) {
     let existingUser = req.user
 
     if (!existingUser) {
-
+        req.flash('error','Sorry,this account doesn\'t exists.')
         res.redirect('/')
-
     }
     else {
 

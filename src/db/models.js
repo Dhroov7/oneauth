@@ -180,7 +180,7 @@ if (!process.env.ONEAUTH_DB_NO_SYNC) {
 
 module.exports = {
     models: {
-        User, UserLocal, UserFacebook, UserTwitter, UserGithub,UserGoogle,UserLinkedin, UserLms,
+        User, UserLocal, UserFacebook, UserTwitter, UserGithub, UserGoogle, UserLinkedin, UserLms,
         Client, GrantCode, AuthToken, Resetpassword, Verifyemail,
         Demographic, Address, College, Company, Branch, State, Country
     },
