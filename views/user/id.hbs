@@ -126,6 +126,18 @@
                         </div>
                     </div>
                 {{/if}}
+                {{#if user.userslack}}
+                    <div id="profile-row-github" class="flex-row">
+                        <div>Slack Connected</div>
+                        <div>
+                            <span class="grey">
+                                <a class="grey" target="_blank" href="http://slack.com">
+                                    {{user.userslack.username}}
+                                </a>
+                            </span>
+                        </div>
+                    </div>
+                {{/if}}
             </div>
         </div>
     </div>

@@ -32,6 +32,7 @@ router.get('/me',
                 models.UserFacebook,
                 models.UserLms,
                 models.UserTwitter,
+                models.UserSlack,
                 {
                     model: models.Demographic,
                     include: [
@@ -187,7 +188,8 @@ router.get('/:id',
                 models.UserGoogle,
                 models.UserFacebook,
                 models.UserLms,
-                models.UserTwitter
+                models.UserTwitter,
+                models.UserSlack
             ])
             if (!user) {
                 return res.status(404).send({error: "Not found"})

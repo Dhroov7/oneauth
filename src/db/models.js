@@ -62,6 +62,7 @@ const UserTwitter = db.define('usertwitter', definitions.social.twitter)
 const UserGithub = db.define('usergithub', definitions.social.github)
 const UserGoogle = db.define('usergoogle',definitions.social.google)
 const UserLms = db.define('userlms', definitions.social.lms)
+const UserSlack = db.define('userslack',definitions.social.slack)
 
 UserLocal.belongsTo(User)
 User.hasOne(UserLocal)
@@ -80,6 +81,9 @@ User.hasOne(UserGoogle)
 
 UserLms.belongsTo(User)
 User.hasOne(UserLms)
+
+UserSlack.belongsTo(User)
+User.hasOne(UserSlack)
 
 Resetpassword.belongsTo(User)
 Verifyemail.belongsTo(User)
@@ -178,7 +182,7 @@ if (!process.env.ONEAUTH_DB_NO_SYNC) {
 
 module.exports = {
     models: {
-        User, UserLocal, UserFacebook, UserTwitter, UserGithub, UserGoogle, UserLms,
+        User, UserLocal, UserFacebook, UserTwitter, UserGithub, UserGoogle, UserLms, UserSlack,
         Client, GrantCode, AuthToken, Resetpassword, Verifyemail,
         Demographic, Address, College, Company, Branch, State, Country
     },

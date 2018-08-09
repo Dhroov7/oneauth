@@ -154,7 +154,22 @@
                         </div>
                     </div>
                 {{/if}}
-                {{#ifCond user.userfacebook user.usergithub user.usergoogle user.usertwitter}}
+                {{#if user.userslack}}
+                    <div id="profile-row-github" class="flex-row">
+                        <div>Slack Connected</div>
+                        <div>
+                            <span class="grey">
+                                <a class="red" target="_blank" href="http://slack.com">
+                                    {{user.userslack.username}}
+                                </a>
+                                <a class="grey" href="/disconnect/slack" title="Disconnect Slack">
+                                    <i class="fa fa-times" aria-hidden="true"></i>
+                                </a>
+                            </span>
+                        </div>
+                    </div>
+                {{/if}}
+                {{#ifCond user.userfacebook user.usergithub user.usergoogle user.usertwitter user.userslack}}
                     <div class="flex-row">
                         You may also connect to:
                     </div>
@@ -199,6 +214,16 @@
                                     <i class="fab fa-github fa-2x"></i>
                                 </button>
                                 <div class="link-text">GITHUB</div>
+                            </a>
+                        </div>
+                    {{/unless}}
+                    {{#unless user.userslack}}
+                        <div class="auth-link">
+                            <a href="/connect/slack">
+                                <button class="button-circle">
+                                    <i class="fab fa-slack fa-2x"></i>
+                                </button>
+                                <div class="link-text">SLACK</div>
                             </a>
                         </div>
                     {{/unless}}

@@ -39,6 +39,13 @@ module.exports = {
         accessToken: Sequelize.DataTypes.STRING,
         course_identifier: Sequelize.DataTypes.STRING,
         courses: Sequelize.DataTypes.JSONB
+    },
+
+    slack:{
+        id: {type: Sequelize.DataTypes.STRING, primaryKey: true},
+        token: Sequelize.DataTypes.STRING,
+        tokenSecret: {type: Sequelize.DataTypes.STRING, allowNull: true},
+        username: {type: Sequelize.DataTypes.STRING, allowNull: true}
     }
 
 }

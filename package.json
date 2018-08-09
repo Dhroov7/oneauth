@@ -55,6 +55,7 @@
     "passport-http-bearer": "^1.0.1",
     "passport-local": "^1.0.0",
     "passport-oauth2-client-password": "^0.1.2",
+    "passport-slack": "0.0.7",
     "passport-strategy": "^1.0.0",
     "passport-twitter-email": "^1.0.3",
     "pg": "6",

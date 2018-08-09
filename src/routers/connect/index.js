@@ -11,5 +11,6 @@ router.use('/facebook', require('./facebook'))
 router.use('/twitter', require('./twitter'))
 router.use('/google', require('./google'))
 router.use('/github', require('./github'))
+router.use('/slack',require('./slack'))
 
 module.exports = router

@@ -20,6 +20,7 @@ passport.use(UserStrategies.twitterStrategy)
 passport.use(UserStrategies.githubStrategy)
 passport.use(UserStrategies.googleStrategy)
 passport.use(UserStrategies.lmsStrategy)
+passport.use(UserStrategies.slackStrategy)
 
 passport.use(ClientStrategies.basicStrategy)
 passport.use(ClientStrategies.clientPasswordStrategy)
