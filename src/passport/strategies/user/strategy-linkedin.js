@@ -19,7 +19,6 @@ module.exports = new LinkedinStrategy({
     let oldUser = req.user
     Raven.setContext({extra: {file: 'linkedinstrategy'}})
     try{
-        if(oldUser){
             debug('User exists, is connecting Linkedin account')
 
             const lkaccount = await models.UserLinkedin.findOne({where:{id:profileJson.id}})
@@ -43,61 +42,6 @@ module.exports = new LinkedinStrategy({
                     return cb(null, false, {message: "Could not retrieve existing Linkedin linked account"})
                 }
             }
-        }else{
-            let userLinkedin = await models.UserLinkedin.findOne({
-                include: [models.User],
-                where: {id: profileJson.id}
-            })
-
-            if (!userLinkedin) {
-                const existingUsers = await models.User.findAll({
-                    include: [{
-                        model: models.UserLinkedin,
-                        attributes: ['id'],
-                        required: false
-                    }],
-                    where: {
-                        email: profileJson.email,
-                        '$userlinkedin.id$': {$eq: null}
-                    }
-                })
-                if (existingUsers && existingUsers.length > 0) {
-                    let oldIds = existingUsers.map(eu => eu.id).join(',')
-                    return cb(null, false, {
-                        message: `
-                    Your email id "${profileJson.email}" is already used in the following Coding Blocks Account(s): 
-                    [ ${oldIds} ]
-                    Please log into your old account and connect Linkedin in it instead.
-                    Use 'Forgot Password' option if you do not remember password of old account`
-                    })
-                }
-
-                const existCount = await models.User.count({where: {username: profileJson.login}})
-
-                userLinkedin = await models.UserLinkedin.create({
-                    id: profileJson.id,
-                    token: token,
-                    tokenSecret: tokenSecret,
-                    username:profileJson.formattedName,
-                    profileLink: profileJson.publicProfileUrl,
-                    user: {
-                        firstname: profileJson.firstName,
-                        lastname: profileJson.lastName,
-                        email: profileJson.emailAddress,
-                        photo: profileJson.pictureUrl
-                    }
-                }, {
-                    include: [models.User],
-                })
-                if (!userLinkedin) {
-                    console.log('here')
-                    return cb(null, false, {message: 'Authentication Failed'})
-                }
-
-            }
-
-            return cb(null, userLinkedin.user.get())
-        }
     }catch(err){
         Raven.captureException(err)
         cb(null, false, {message: err.message})
