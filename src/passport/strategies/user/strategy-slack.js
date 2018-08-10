@@ -19,7 +19,6 @@ module.exports = new SlackStrategy({
     let profileJson = profile
     Raven.setContext({extra: {file: 'slackstrategy'}})
     try {
-            debug('User exists, is connecting Slack account')
 
             const skaccount = await models.UserSlack.findOne({where: {id: profileJson.id}})
             if (skaccount) {
