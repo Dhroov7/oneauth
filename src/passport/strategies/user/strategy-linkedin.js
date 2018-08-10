@@ -19,7 +19,6 @@ module.exports = new LinkedinStrategy({
     let oldUser = req.user
     Raven.setContext({extra: {file: 'linkedinstrategy'}})
     try{
-            debug('User exists, is connecting Linkedin account')
 
             const lkaccount = await models.UserLinkedin.findOne({where:{id:profileJson.id}})
             if(lkaccount){
