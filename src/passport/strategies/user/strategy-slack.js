@@ -17,10 +17,8 @@ module.exports = new SlackStrategy({
     scope: ['identity.basic', 'identity.email', 'identity.avatar', 'identity.team'],
 }, async function (req, token, tokenSecret, profile, cb) {
     let profileJson = profile
-    let oldUser = req.user
     Raven.setContext({extra: {file: 'slackstrategy'}})
     try {
-        if (oldUser) {
             debug('User exists, is connecting Slack account')
 
             const skaccount = await models.UserSlack.findOne({where: {id: profileJson.id}})
@@ -43,63 +41,6 @@ module.exports = new SlackStrategy({
                     return cb(null, false, {message: "Could not retrieve existing Slack linked account"})
                 }
             }
-        } else {
-
-            let userSlack = await models.UserSlack.findOne({
-                include: [models.User],
-                where: {id: profileJson.id}
-            })
-
-            if (!userSlack) {
-
-                const existingUsers = await models.User.findAll({
-                    include: [{
-                        model: models.UserSlack,
-                        attributes: ['id'],
-                        required: false
-                    }],
-                    where: {
-                        email: profileJson.email,
-                        '$userslack.id$': {$eq: null}
-                    }
-                })
-                if (existingUsers && existingUsers.length > 0) {
-                    let oldIds = existingUsers.map(eu => eu.id).join(',')
-                    return cb(null, false, {
-                        message: `
-                    Your email id "${profileJson.email}" is already used in the following Coding Blocks Account(s): 
-                    [ ${oldIds} ]
-                    Please log into your old account and connect Slack in it instead.
-                    Use 'Forgot Password' option if you do not remember password of old account`
-                    })
-                }
-
-
-                /* Check if users with same username exist. Modify username accordingly */
-                const existCount = await models.User.count({where: {username: profileJson.displayName}})
-
-                userSlack = await models.UserSlack.create({
-                    id: profileJson.id,
-                    token: token,
-                    tokenSecret: tokenSecret,
-                    username: profileJson.displayName,
-                    user: {
-                        firstname: profileJson.displayName ? profileJson.displayName.split(' ')[0] : profileJson.displayName,
-                        lastname: profileJson.displayName ? profileJson.displayName.split(' ').pop() : profileJson.displayName,
-                        email: profileJson.user.email,
-                        photo: profileJson.avatar_url
-                    }
-                }, {
-                    include: [models.User],
-                })
-                if (!userSlack) {
-                    return cb(null, false, {message: 'Authentication Failed'})
-                }
-
-            }
-
-            return cb(null, userSlack.user.get())
-        }
     } catch (err) {
         Raven.captureException(err)
         cb(null, false, {message: err.message})
