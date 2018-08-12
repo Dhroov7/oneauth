@@ -188,7 +188,8 @@ router.get('/:id',
                 models.UserGoogle,
                 models.UserFacebook,
                 models.UserLms,
-                models.UserTwitter
+                models.UserTwitter,
+                models.UserLinkedin
             ])
             if (!user) {
                 return res.status(404).send({error: "Not found"})
