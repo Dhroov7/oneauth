@@ -83,6 +83,18 @@
 
                     <div class="row no-gutters align-items-center justify-content-between detail-row">
                         <div class="label-input col-2">Contact Number</div>
+                        <div class="label-input col-1">
+                            <select class="dropdown-ul input-text">
+                                {{#each numberPrefix}}
+                                    {{#ifeq expected=id val=../user.demographic.numberPrefixId}}
+                                        <option class="dropdown-li" value="{{dialCode}}" selected>{{dialCode}} {{name}}</option>
+                                    {{/ifeq}}
+                                    {{#ifneq expected=id val=../user.demographic.numberPrefixId}}
+                                        <option class="dropdown-li" value="{{dialCode}}">{{dialCode}} {{name}}</option>
+                                    {{/ifneq}}
+                                {{/each}}
+                            </select>
+                        </div>
                         <input class="input-text col-9" type="text" name="mobile_number" id="mobile_number" value="{{user.mobile_number}}"/>
                     </div>
 

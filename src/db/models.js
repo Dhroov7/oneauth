@@ -140,6 +140,7 @@ const Country = db.define('country', definitions.demographics.country)
 const College = db.define('college', definitions.demographics.college)
 const Company = db.define('company', definitions.demographics.company)
 const Branch = db.define('branch', definitions.demographics.branch)
+const numberPrefix = db.define('numberPrefix',definitions.demographics.numberPrefix)
 
 State.belongsTo(Country)
 Country.hasMany(State)
@@ -166,6 +167,9 @@ Company.hasMany(Demographic)
 Demographic.belongsTo(Branch)
 Branch.hasMany(Demographic)
 
+Demographic.belongsTo(numberPrefix)
+numberPrefix.hasMany(Demographic)
+
 if (!process.env.ONEAUTH_DB_NO_SYNC) {
     db.sync({
         alter: process.env.ONEAUTH_ALTER_TABLE || false,
@@ -180,7 +184,7 @@ module.exports = {
     models: {
         User, UserLocal, UserFacebook, UserTwitter, UserGithub, UserGoogle, UserLms,
         Client, GrantCode, AuthToken, Resetpassword, Verifyemail,
-        Demographic, Address, College, Company, Branch, State, Country
+        Demographic, Address, College, Company, Branch, State, Country, numberPrefix
     },
     db
 }

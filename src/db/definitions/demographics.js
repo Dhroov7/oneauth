@@ -66,5 +66,23 @@ module.exports = {
         }
     },
 
+    numberPrefix:{
+        name:{
+            type: Sequelize.DataTypes.STRING,
+            allowNull: false,
+            unique: true
+        },
+        dialCode:{
+            type: Sequelize.DataTypes.STRING,
+            allowNull: false,
+            unique: true
+        },
+        code:{
+            type: Sequelize.DataTypes.STRING,
+            allowNull: false,
+            unique: true
+        }
+    }
+
 
 }
