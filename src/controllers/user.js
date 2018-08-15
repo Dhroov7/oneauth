@@ -79,9 +79,17 @@ function generateFilter(filterArgs) {
 
 }
 
+function findUserByUsername(trustedClient,username){
+  return User.findOne({
+      attributes: trustedClient ? undefined : ["id", "username", "photo"],
+      where: { username: username }
+  })
+}
+
 module.exports = {
   findUserById,
   updateUser,
   findUserForTrustedClient,
-  findAllUsersWithFilter
+  findAllUsersWithFilter,
+  findUserByUsername
 };
