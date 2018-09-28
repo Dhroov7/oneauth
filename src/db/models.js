@@ -57,9 +57,10 @@ const Verifyemail = db.define('verifyemail', {
     paranoid: true
 })
 
-const Verifynumber = db.define('verifymobile', {
-    id: {type: Sequelize.DataTypes.BIGINT, autoIncrement: true, primaryKey: true},
-    key: {type: Sequelize.DataTypes.STRING, unique: true, allowNull: false}
+const Verifymobile = db.define('verifymobile', {
+    id: {type: Sequelize.DataTypes.BIGINT, autoIncrement: true},
+    key: {type: Sequelize.DataTypes.BIGINT, unique: true, allowNull: false},
+    mobile_number: {type: Sequelize.DataTypes.STRING, unique: true, primaryKey: true}
 }, {
     paranoid: true
 })
@@ -95,7 +96,7 @@ User.hasOne(UserLms, {foreignKey: {unique: true}})
 
 Resetpassword.belongsTo(User)
 Verifyemail.belongsTo(User)
-Verifynumber.belongsTo(User)
+Verifymobile.belongsTo(User)
 
 const Client = db.define('client', {
     id: {type: Sequelize.DataTypes.BIGINT, primaryKey: true},
@@ -201,7 +202,7 @@ module.exports = {
     models: {
         User, UserLocal, UserFacebook, UserTwitter, UserGithub, UserGoogle,
         UserLinkedin, UserLms, Client, GrantCode, AuthToken, Resetpassword, Verifyemail,
-        Demographic, Address, College, Company, Branch, State, Country, EventSubscription
+        Demographic, Address, College, Company, Branch, State, Country, EventSubscription, Verifymobile
     },
     db
 }

@@ -83,7 +83,12 @@
 
                     <div class="row no-gutters align-items-center justify-content-between detail-row">
                         <div class="label-input col-2">Contact Number</div>
-                        <input class="input-text col-9" type="text" name="mobile_number" id="mobile_number" value="{{user.mobile_number}}"/>
+                        {{#if user.verifiesmobile}}
+                            <input class="input-text col-9" type="text" name="mobile_number" id="mobile_number" disabled value="{{user.mobile_number}}"/>
+                        {{else}}
+                            <input class="input-text col-9" type="text" name="mobile_number" id="mobile_number" value="{{user.mobile_number}}"/>
+                        {{/if}}
+
                     </div>
 
                     <div class="row no-gutters align-items-center justify-content-between detail-row">
