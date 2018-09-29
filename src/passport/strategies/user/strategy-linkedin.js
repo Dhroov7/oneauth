@@ -5,7 +5,6 @@ const models = require('../../../db/models').models
 const config = require('../../../../config')
 const secrets = config.SECRETS
 
-const debug = require('debug')('oauth:strategy:linkedin')
 
 module.exports = new LinkedinStrategy({
     clientID: secrets.LINKEDIN_CLIENT_ID,
