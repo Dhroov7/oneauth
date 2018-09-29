@@ -6,7 +6,7 @@ module.exports = {
         first_name: {type: Sequelize.DataTypes.STRING, allowNull: false},
         last_name: {type: Sequelize.DataTypes.STRING, allowNull: false},
         mobile_number: {type: Sequelize.DataTypes.STRING, allowNull: false},
-        whatsapp_number: {type: Sequelize.DataTypes.STRING, allowNull: true},
+        whatsapp_number: {type: Sequelize.DataTypes.STRING(15), allowNull: true},
         email: {type: Sequelize.DataTypes.STRING, allowNull: false},
         pincode: {type: Sequelize.DataTypes.INTEGER, allowNull: false},
         street_address: {type: Sequelize.DataTypes.STRING, allowNull: false},
