@@ -1,5 +1,4 @@
 const generator = require("../utils/generator");
-const { Client, Demographic, Address, User, EventSubscription } = require("../db/models").models;
 
 function deleteEventSubscription(id) {
   return EventSubscription.destroy({
