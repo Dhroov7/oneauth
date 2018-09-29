@@ -3,6 +3,7 @@ const {db} = require('../../db/models')
 const cel = require('connect-ensure-login')
 const Raven = require('raven')
 const {hasNull} = require('../../utils/nullCheck')
+const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance()
 
 const {
     findOrCreateDemographic,
@@ -25,7 +26,7 @@ router.post('/', cel.ensureLoggedIn('/login'),async function (req, res) {
                 label: req.body.label || null,
                 first_name: req.body.first_name,
                 last_name: req.body.last_name,
-                mobile_number: req.body.number,
+                mobile_number: req.body.mobile_number ? (phoneUtil.isValidNumber(+req.body.mobile_number) ? req.body.mobile_number : null) : null,
                 email: req.body.email,
                 pincode: req.body.pincode,
                 street_address: req.body.street_address,
@@ -34,7 +35,7 @@ router.post('/', cel.ensureLoggedIn('/login'),async function (req, res) {
                 stateId: req.body.stateId,
                 countryId: req.body.countryId,
                 demographicId: demographics.id,
-                whatsapp_number: req.body.whatsapp_number || null,
+                whatsapp_number: req.body.whatsapp_number ? (phoneUtil.isValidNumber(+req.body.whatsapp_number) ? req.body.whatsapp_number : null) : null,
                 // if no addresses, then first one added is primary
                 primary: !demographics.get().addresses
             }
@@ -72,7 +73,7 @@ router.post('/:id', cel.ensureLoggedIn('/login'), async function (req, res) {
                     label: req.body.label || null,
                     first_name: req.body.first_name,
                     last_name: req.body.last_name,
-                    mobile_number: req.body.number,
+                    mobile_number: req.body.mobile_number ? (phoneUtil.isValidNumber(+req.body.mobile_number) ? req.body.mobile_number : null) : null,
                     email: req.body.email,
                     pincode: req.body.pincode,
                     street_address: req.body.street_address,
@@ -80,7 +81,7 @@ router.post('/:id', cel.ensureLoggedIn('/login'), async function (req, res) {
                     city: req.body.city,
                     stateId: req.body.stateId,
                     countryId: req.body.countryId,
-                    whatsapp_number: req.body.whatsapp_number || null,
+                    whatsapp_number: req.body.whatsapp_number ? (phoneUtil.isValidNumber(+req.body.whatsapp_number) ? req.body.whatsapp_number : null) : null,
                     primary: req.body.primary === 'on'
                 })
             if (req.body.returnTo) {
@@ -88,7 +89,7 @@ router.post('/:id', cel.ensureLoggedIn('/login'), async function (req, res) {
             } else {
                 return res.redirect(`/address/${addrId}`)
             }
-        })
+        })q
 
     } catch (err) {
         Raven.captureException(err)

@@ -6,6 +6,7 @@ const cel = require('connect-ensure-login')
 const router = require('express').Router()
 const models = require('../../../db/models').models
 const acl = require('../../../middlewares/acl')
+const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance()
 
 const {
     findUserById,
@@ -68,7 +69,7 @@ router.post('/:id/edit',
                 lastname: req.body.lastname,
                 gender:req.body.gender,
                 email: req.body.email,
-                mobile_number: req.body.mobile_number,
+                mobile_number: req.body.mobile_number ? (phoneUtil.isValidNumber(+req.body.mobile_number) ? req.body.mobile_number : null) : null,
                 role: req.body.role !== 'unchanged' ? req.body.role : undefined
             })
             return res.redirect('../' + req.params.id);

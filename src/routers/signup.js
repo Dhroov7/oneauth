@@ -10,6 +10,7 @@ const passutils = require('../utils/password')
 const makeGaEvent = require('../utils/ga').makeGaEvent
 const mail = require('../utils/email')
 const { findUserByParams, createUserLocal } = require('../controllers/user')
+const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance()
 
 router.post('/', makeGaEvent('submit', 'form', 'signup'), async (req, res) => {
 
@@ -43,6 +44,11 @@ router.post('/', makeGaEvent('submit', 'form', 'signup'), async (req, res) => {
         const User = await findUserByParams({username: req.body.username})
         if (User) {
             req.flash('error', 'Username already exists. Please try again.')
+            return res.redirect('/signup')
+        }
+
+        if(!(phoneUtil.isValidNumber(+req.body.mobile_number))) {
+            req.flash('error', 'Invalid Phone number!')
             return res.redirect('/signup')
         }
 
