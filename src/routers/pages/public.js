@@ -6,7 +6,6 @@
 const Raven = require('raven') 
 const cel = require('connect-ensure-login')
 const router = require('express').Router()
-const verifyemail = require('../../routers/verifyemail')
 const {
     findAllBranches,
     findAllColleges

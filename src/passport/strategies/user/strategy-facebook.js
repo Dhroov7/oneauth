@@ -8,8 +8,6 @@ const models = require('../../../db/models').models
 
 const config = require('../../../../config')
 const secrets = config.SECRETS
-const passutils = require('../../../utils/password')
-const debug = require('debug')('oauth:strategy:facebook')
 
 
 /**
@@ -41,7 +39,7 @@ module.exports = new FacebookStrategy({
             if (fbaccount) {
                 throw new Error('Your Facebook account is already linked with codingblocks account Id: ' + fbaccount.dataValues.userId)
             }else{
-                const updated = await models.UserFacebook.upsert({
+                await models.UserFacebook.upsert({
                     id: profileJson.id,
                     accessToken: authToken,
                     refreshToken: refreshToken,

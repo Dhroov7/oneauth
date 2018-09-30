@@ -5,7 +5,6 @@ const models = require('../../../db/models').models
 
 const config = require('../../../../config')
 const secrets = config.SECRETS
-const passutils = require('../../../utils/password')
 const debug = require('debug')('oauth:strategies:google')
 
 module.exports = new GoogleStrategy({
@@ -32,7 +31,7 @@ module.exports = new GoogleStrategy({
                 if (glaccount) {
                     throw new Error('Your Google account is already linked with codingblocks account Id: ' + glaccount.dataValues.userId)
                 } else {
-                    const updated = await models.UserGoogle.upsert({
+                    await models.UserGoogle.upsert({
                         id: profileJson.id,
                         accessToken: accessToken,
                         refreshToken: refreshToken,

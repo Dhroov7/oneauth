@@ -29,8 +29,7 @@ const config = require('../config')
     , pagerouter = require('./routers/pages')
     , statusrouter = require('./routers/statusrouter')
     , {expresstracer, datadogRouter} = require('./utils/ddtracer')
-    , {expressLogger} = require('./utils/logger'),
-      handlebarsHelpers = require('./utils/handlebars');
+    , {expressLogger} = require('./utils/logger')
 
 const app = express()
 

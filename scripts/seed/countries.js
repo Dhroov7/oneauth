@@ -1,5 +1,3 @@
-const config = require('../../config');
-const secret = config.SECRETS;
 const {db, models: {
         Country
     }} = require('../../src/db/models');

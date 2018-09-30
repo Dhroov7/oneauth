@@ -1,5 +1,4 @@
 const config = require('../../config');
-const secret = config.SECRETS;
 const {db, models: {
     User
 }} = require('../../src/db/models');
@@ -11,7 +10,7 @@ const {db, models: {
 async function runPrune() {
     try {
 
-        const [users, result] = await db.query(`
+        const users = await db.query(`
 select count("email"), count("verifiedemail") as "verifieds", "email",
         count("userfacebooks"."id") as "fb", 
         count("usergithubs"."id") as "gh", 

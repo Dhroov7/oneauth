@@ -1,5 +1,4 @@
 const config = require('../config');
-const secret = config.SECRETS;
 const package = require('../package')
 config.DEBUG = true;
 process.env.ONEAUTH_DB_NO_SYNC = 'true'
