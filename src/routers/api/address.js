@@ -3,7 +3,7 @@ const {db} = require('../../db/models')
 const cel = require('connect-ensure-login')
 const Raven = require('raven')
 const {hasNull} = require('../../utils/nullCheck')
-const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance()
+const mobileUtil = require('../../utils/mobileNumber')
 
 const {
     findOrCreateDemographic,
@@ -20,13 +20,30 @@ router.post('/', cel.ensureLoggedIn('/login'),async function (req, res) {
         if (req.query) {
             var redirectUrl = req.query.returnTo;
         }
+
+        let user = {}
+        let mobile_number = mobileUtil.parseNumber(req.body.mobile_number)
+        let whatsapp_number = mobileUtil.parseNumber(req.body.whatsapp_number)
+
+        if(mobileUtil.validateNumber(mobile_number)){
+            user.mobile_number = req.body.mobile_number
+        }else{
+            user.mobile_number = null
+        }
+        if(mobileUtil.validateNumber(whatsapp_number)){
+            user.whatsapp_number = req.body.whatsapp_number
+        }else{
+            user.whatsapp_number = null
+        }
+
+
         try {
             const [demographics, created] = await findOrCreateDemographic(req.user.id);
             const options = {
                 label: req.body.label || null,
                 first_name: req.body.first_name,
                 last_name: req.body.last_name,
-                mobile_number: req.body.mobile_number ? (phoneUtil.isValidNumber(+req.body.mobile_number) ? req.body.mobile_number : null) : null,
+                mobile_number: user.mobile_number,
                 email: req.body.email,
                 pincode: req.body.pincode,
                 street_address: req.body.street_address,
@@ -35,7 +52,7 @@ router.post('/', cel.ensureLoggedIn('/login'),async function (req, res) {
                 stateId: req.body.stateId,
                 countryId: req.body.countryId,
                 demographicId: demographics.id,
-                whatsapp_number: req.body.whatsapp_number ? (phoneUtil.isValidNumber(+req.body.whatsapp_number) ? req.body.whatsapp_number : null) : null,
+                whatsapp_number: user.whatsapp_number || null,
                 // if no addresses, then first one added is primary
                 primary: !demographics.get().addresses
             }
@@ -60,6 +77,21 @@ router.post('/:id', cel.ensureLoggedIn('/login'), async function (req, res) {
     let addrId = parseInt(req.params.id)
     let userId = parseInt(req.user.id)
 
+    let user = {}
+    let mobile_number = mobileUtil.parseNumber(req.body.mobile_number)
+    let whatsapp_number = mobileUtil.parseNumber(req.body.whatsapp_number)
+
+    if(mobileUtil.validateNumber(mobile_number)){
+        user.mobile_number = req.body.mobile_number
+    }else{
+        user.mobile_number = null
+    }
+    if(mobileUtil.validateNumber(whatsapp_number)){
+        user.whatsapp_number = req.body.whatsapp_number
+    }else{
+        user.whatsapp_number = null
+    }
+
 
     try {
         await db.transaction(async (t) => {
@@ -73,7 +105,7 @@ router.post('/:id', cel.ensureLoggedIn('/login'), async function (req, res) {
                     label: req.body.label || null,
                     first_name: req.body.first_name,
                     last_name: req.body.last_name,
-                    mobile_number: req.body.mobile_number ? (phoneUtil.isValidNumber(+req.body.mobile_number) ? req.body.mobile_number : null) : null,
+                    mobile_number: user.mobile_number,
                     email: req.body.email,
                     pincode: req.body.pincode,
                     street_address: req.body.street_address,
@@ -81,7 +113,7 @@ router.post('/:id', cel.ensureLoggedIn('/login'), async function (req, res) {
                     city: req.body.city,
                     stateId: req.body.stateId,
                     countryId: req.body.countryId,
-                    whatsapp_number: req.body.whatsapp_number ? (phoneUtil.isValidNumber(+req.body.whatsapp_number) ? req.body.whatsapp_number : null) : null,
+                    whatsapp_number: user.whatsapp_number || null,
                     primary: req.body.primary === 'on'
                 })
             if (req.body.returnTo) {

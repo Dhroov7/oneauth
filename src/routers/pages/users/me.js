@@ -7,7 +7,7 @@ const acl = require('../../../middlewares/acl')
 const {hasNull} = require('../../../utils/nullCheck')
 const passutils = require('../../../utils/password')
 const multer = require('../../../utils/multer')
-const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance()
+const mobileUtil = require('../../../utils/mobileNumber')
 
 const {
   findUserById,
@@ -119,7 +119,12 @@ router.post('/edit',
       return res.redirect('/users/me/edit')
     }
 
-    if(Number.isNaN(+(req.body.mobile_number)) || (req.body.mobile_number.length !== 10) || !(phoneUtil.isValidNumber(+req.body.mobile_number))){
+    if(Number.isNaN(+(req.body.mobile_number)) || (req.body.mobile_number.length !== 10)) {
+        req.flash('error', 'Contact number is not a valid number')
+        return res.redirect('/users/me/edit')
+    }
+
+    if(!(mobileUtil.validateNumber(mobileUtil.parseNumber(req.body.mobile_number)))) {
         req.flash('error', 'Contact number is not a valid number')
         return res.redirect('/users/me/edit')
     }
@@ -134,7 +139,7 @@ router.post('/edit',
       if(req.body.gender){
         user.gender = req.body.gender
       }
-      if(phoneUtil.isValidNumber(+req.body.mobile_number)) {
+      if((mobileUtil.validateNumber(mobileUtil.parseNumber(req.body.mobile_number)))) {
           user.mobile_number = req.body.mobile_number
       }
       if (!user.verifiedemail && req.body.email !== user.email) {

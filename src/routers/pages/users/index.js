@@ -6,7 +6,7 @@ const cel = require('connect-ensure-login')
 const router = require('express').Router()
 const models = require('../../../db/models').models
 const acl = require('../../../middlewares/acl')
-const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance()
+const mobileUtil = require('../../../utils/mobileNumber')
 
 const {
     findUserById,
@@ -63,13 +63,23 @@ router.post('/:id/edit',
     cel.ensureLoggedIn('/login'),
     acl.ensureRole('admin'),
     async function (req, res, next) {
+
+        let user = {}
+        let mobile_number = mobileUtil.parseNumber(req.body.mobile_number)
+
+        if(mobileUtil.validateNumber(mobile_number)){
+            user.mobile_number = req.body.mobile_number
+        }else{
+            user.mobile_number = null
+        }
+
         try {
             const user = await updateUser(req.params.id,{
                 firstname: req.body.firstname,
                 lastname: req.body.lastname,
                 gender:req.body.gender,
                 email: req.body.email,
-                mobile_number: req.body.mobile_number ? (phoneUtil.isValidNumber(+req.body.mobile_number) ? req.body.mobile_number : null) : null,
+                mobile_number: user.mobile_number,
                 role: req.body.role !== 'unchanged' ? req.body.role : undefined
             })
             return res.redirect('../' + req.params.id);
