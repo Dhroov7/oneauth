@@ -1,7 +1,6 @@
 /**
  * Created by championswimmer on 08/03/17.
  */
-
 require('newrelic')
 const express = require('express')
     , bodyParser = require('body-parser')
@@ -11,6 +10,7 @@ const express = require('express')
     , exphbs = require('express-hbs')
     , expressGa = require('express-ga-middleware')
     , flash = require('express-flash')
+    , csurf = require('csurf')
     , Raven = require('raven')
     , debug = require('debug')('oneauth:server')
 
@@ -30,8 +30,9 @@ const config = require('../config')
     , pagerouter = require('./routers/pages')
     , statusrouter = require('./routers/statusrouter')
     , {expresstracer, datadogRouter} = require('./utils/ddtracer')
-    , {expressLogger} = require('./utils/logger'),
-      handlebarsHelpers = require('./utils/handlebars');
+    , {expressLogger} = require('./utils/logger')
+    , handlebarsHelpers = require('./utils/handlebars')
+    ,  { profilePhotoMiddleware } = require('./middlewares/profilephoto');
 
 const app = express()
 
@@ -73,6 +74,7 @@ Raven.config(secrets.SENTRY_DSN).install()
 app.use(Raven.requestHandler())
 // ====================== END SENTRY
 
+// ====================== Handlebars Config
 app.engine('hbs', exphbs.express4({
     partialsDir: path.join(__dirname, '../views/partials'),
     layoutsDir: path.join(__dirname, '../views/layouts'),
@@ -81,6 +83,8 @@ app.engine('hbs', exphbs.express4({
 app.set('views', path.join(__dirname, '../views'))
 app.set("view engine", "hbs")
 app.set('view cache', true)
+// ====================== Handlebars Config
+
 
 app.use('/status', statusrouter)
 app.use(expressLogger)
@@ -107,6 +111,15 @@ app.use(setuserContext)
 app.use(redirectToHome)
 app.use(expressGa('UA-83327907-12'))
 app.use(datadogRouter)
+app.use('/api', apirouter)
+app.use(profilePhotoMiddleware)
+app.use('/oauth', oauthrouter)
+app.use('/verifyemail', verifyemailrouter)
+// app.use(csurf({cookie: false}))
+app.use((req, res, next) => {
+    res.locals.csrfToken = ""; // req.csrfToken() // Inject csrf to hbs views
+    next()
+})
 app.use('/logout', logoutrouter)
 app.use('/signup', signuprouter)
 app.use('/login', loginrouter)
@@ -118,7 +131,7 @@ app.use('/verifymobile', verifymobilerouter)
 app.use('/api', apirouter)
 app.use('/oauth', oauthrouter)
 app.use('/', pagerouter)
-app.get('*', (req, res) => res.render('404')); 
+app.get('*', (req, res) => res.render('404'));
 
 app.use(Raven.errorHandler())
 

@@ -3,10 +3,10 @@ const cel = require('connect-ensure-login')
 const router = require('express').Router()
 
 const models = require('../../../db/models').models
-const acl = require('../../../middlewares/acl')
 const {hasNull} = require('../../../utils/nullCheck')
 const passutils = require('../../../utils/password')
-const multer = require('../../../utils/multer')
+const { profilePhotoMiddleware } = require('../../../middlewares/profilephoto')
+const { deleteMinio } = require('../../../utils/multer')
 
 const {
   findUserById,
@@ -82,24 +82,6 @@ router.get('/edit',
 
 router.post('/edit',
   cel.ensureLoggedIn('/login'),
-
-  function(req, res, next) {
-    var upload = multer.upload.single('userpic')
-    upload(req, res, function (err) {
-      if(err) {
-        if (err.message === 'File too large') {
-          req.flash('error', 'Profile photo size exceeds 2 MB')
-          return res.redirect('/users/me/edit')
-        } else {
-          Raven.captureException(err)
-          req.flash('error', 'Error in Server')
-          return res.redirect('/')
-        }
-      } else {
-        next()
-      }
-    })
-  },
   async function (req, res, next) {
     //exit if password doesn't match
     if ((req.body.password) && (req.body.password !== req.body.repassword)) {
@@ -151,7 +133,7 @@ router.post('/edit',
       await user.save()
 
       if ((req.file || req.body.avatarselect) && prevPhoto) {
-        multer.deleteMinio(prevPhoto)
+        deleteMinio(prevPhoto)
       }
 
       // If am empty demographic, then insert userid

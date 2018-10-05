@@ -1,5 +1,4 @@
 const config = require('../../config');
-const secret = config.SECRETS;
 const {db, models: {
     User
 }} = require('../../src/db/models');
@@ -10,7 +9,7 @@ const {db, models: {
 async function runPrune() {
     try {
         // Only deleting older than 01 May 2018
-        const [users, result] = await db.query(`
+        const [users] = await db.query(`
 SELECT  
         count("email") AS "count", 
         count("verifiedemail") as "Verified", 
@@ -29,7 +28,7 @@ HAVING
 ORDER BY "count" DESC, "users"."email" ASC
         `)
         console.log("Going to delete " + users.length + " users")
-        for (user of users) {
+        for (let user of users) {
             console.log("Deleting for " + user.email )
             await User.destroy({
                 where: {
