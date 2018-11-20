@@ -1,6 +1,6 @@
 const generator = require("../utils/generator");
 const urlutils = require("../utils/urlutils");
-const { Client } = require("../db/models").models;
+const { Client, User, userClient } = require("../db/models").models;
 
 function findClientById(id) {
   return Client.findOne({
@@ -8,7 +8,7 @@ function findClientById(id) {
   });
 }
 
-function createClient(options, userId) {
+async function createClient(options, userId) {
   options.defaultURL = urlutils.prefixHttp(options.defaultURL);
 
   //Make sure all urls have http in them
@@ -18,15 +18,21 @@ function createClient(options, userId) {
   options.clientCallbacks.forEach(function(url, i, arr) {
     arr[i] = urlutils.prefixHttp(url);
   });
-  return Client.create({
+  const client = await Client.create({
     id: generator.genNdigitNum(10),
     secret: generator.genNcharAlphaNum(64),
     name: options.clientName,
     domain: options.clientDomains,
     defaultURL: options.defaultURL,
-    callbackURL: options.clientCallbacks,
-    userId: userId
-  });
+    callbackURL: options.clientCallbacks
+  })
+
+  await userClient.create({
+      clientId: client.id,
+      userId: userId
+  })
+
+  return client
 }
 function updateClient(options, clientId) {
   options.defaultURL = urlutils.prefixHttp(options.defaultURL);
@@ -59,9 +65,15 @@ function findAllClients() {
 }
 
 function findAllClientsByUserId(userId) {
-  return Client.findAll({
-    where: { userId }
-  });
+  return User.findById(userId, {
+      include: Client
+  }).then(user => user.clients)
+}
+
+function findUserByClientId(clientId) {
+  return userClient.find({
+      where: {clientId}
+  })
 }
 
 module.exports = {
@@ -69,5 +81,6 @@ module.exports = {
   updateClient,
   findClientById,
   findAllClients,
-  findAllClientsByUserId
+  findAllClientsByUserId,
+  findUserByClientId
 };

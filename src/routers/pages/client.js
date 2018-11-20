@@ -7,7 +7,8 @@ const cel = require('connect-ensure-login')
 const acl = require('../../middlewares/acl')
 const {
     findClientById,
-    findAllClients
+    findAllClients,
+    findUserByClientId
 } =require('../../controllers/clients');
 
 const { 
@@ -40,7 +41,8 @@ router.get('/:id',
             if (!client) {
                 return res.send("Invalid Client Id")
             }
-            if (client.userId != req.user.id) {
+            const userClient = await findUserByClientId(req.params.id)
+            if (userClient.userId != req.user.id) {
                 return res.send("Unauthorized user")
             }
             return res.render('client/id', {client: client})

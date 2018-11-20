@@ -100,8 +100,19 @@ const Client = db.define('client', {
     defaultURL: {type: Sequelize.DataTypes.STRING, allowNull:false, default: 'https://codingblocks.com/'},
 })
 
-Client.belongsTo(User)
-User.hasMany(Client)
+const userClient = db.define('userclient',{})
+
+Client.belongsToMany(User, {
+    through: {
+        model: userClient
+    }
+})
+
+User.belongsToMany(Client, {
+    through: {
+        model: userClient
+    }
+})
 
 const GrantCode = db.define('grantcode', {
     code: {type: Sequelize.DataTypes.STRING, primaryKey: true}
@@ -193,7 +204,7 @@ module.exports = {
     models: {
         User, UserLocal, UserFacebook, UserTwitter, UserGithub, UserGoogle,
         UserLinkedin, UserLms, Client, GrantCode, AuthToken, Resetpassword, Verifyemail,
-        Demographic, Address, College, Company, Branch, State, Country, EventSubscription
+        Demographic, Address, College, Company, Branch, State, Country, EventSubscription, userClient
     },
     db
 }
