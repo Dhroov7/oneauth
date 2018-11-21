@@ -100,17 +100,17 @@ const Client = db.define('client', {
     defaultURL: {type: Sequelize.DataTypes.STRING, allowNull:false, default: 'https://codingblocks.com/'},
 })
 
-const userClient = db.define('userclient',{})
+const UserClient = db.define('userclient',{})
 
 Client.belongsToMany(User, {
     through: {
-        model: userClient
+        model: UserClient
     }
 })
 
 User.belongsToMany(Client, {
     through: {
-        model: userClient
+        model: UserClient
     }
 })
 
@@ -204,7 +204,7 @@ module.exports = {
     models: {
         User, UserLocal, UserFacebook, UserTwitter, UserGithub, UserGoogle,
         UserLinkedin, UserLms, Client, GrantCode, AuthToken, Resetpassword, Verifyemail,
-        Demographic, Address, College, Company, Branch, State, Country, EventSubscription, userClient
+        Demographic, Address, College, Company, Branch, State, Country, EventSubscription, UserClient
     },
     db
 }

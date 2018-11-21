@@ -1,6 +1,6 @@
 const generator = require("../utils/generator");
 const urlutils = require("../utils/urlutils");
-const { Client, User, userClient } = require("../db/models").models;
+const { Client, User, UserClient } = require("../db/models").models;
 
 function findClientById(id) {
   return Client.findOne({
@@ -27,7 +27,7 @@ async function createClient(options, userId) {
     callbackURL: options.clientCallbacks
   })
 
-  await userClient.create({
+  await UserClient.create({
       clientId: client.id,
       userId: userId
   })
@@ -71,7 +71,7 @@ function findAllClientsByUserId(userId) {
 }
 
 function findUserByClientId(clientId) {
-  return userClient.find({
+  return UserClient.find({
       where: {clientId}
   })
 }
