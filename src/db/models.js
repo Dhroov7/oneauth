@@ -104,13 +104,15 @@ const UserClient = db.define('userclient',{})
 
 Client.belongsToMany(User, {
     through: {
-        model: UserClient
+        model: UserClient,
+        unique: false
     }
 })
 
 User.belongsToMany(Client, {
     through: {
-        model: UserClient
+        model: UserClient,
+        unique: false
     }
 })
 

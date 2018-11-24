@@ -1,0 +1,24 @@
+{{!< centercolumn}}
+
+<div class="offset-md-4 col-md-8">
+    <div class="card">
+        <div class="heading-u-red">Add Owner for {{client.id}}</div>
+        <form id="edit-form" method="post" action="/api/clients/addowner">
+            <div class="attributes">
+                <div class="row no-gutters align-items-center justify-content-between detail-row">
+                    <div class="label-input col-2">Client ID:</div>
+                    <input type="text" readonly class="input-text col-9" name="clientId" value="{{client.id}}">
+                </div>
+                <div class="row no-gutters align-items-center justify-content-between detail-row">
+                    <div class="label-input col-2">OneAuth ID:</div>
+                    <input class="input-text col-9" type="text" name="userId" placeholder="Enter the OneAuth ID"/>
+                </div>
+                <div class="flex-row justify-content-end button-div">
+                    <div class="button-solid">
+                        <button type="submit">Add Owner</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

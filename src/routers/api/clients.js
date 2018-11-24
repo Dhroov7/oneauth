@@ -9,7 +9,8 @@ const cel = require('connect-ensure-login')
 const { isURL } = require('../../utils/urlutils')
 const {
     createClient,
-    updateClient
+    updateClient,
+    addOwnerofClient
 } =require('../../controllers/clients');
 
 const {
@@ -140,6 +141,18 @@ router.post('/edit/:id', cel.ensureLoggedIn('/login'),
             req.flash('error', 'Could not update client')
             res.redirect('/users/me')
         }
+    })
+
+router.post('/addowner', cel.ensureLoggedIn('/login'),
+    async function (req,res) {
+       try {
+           await addOwnerofClient(req.body.clientId, req.body.userId)
+           res.redirect('/clients')
+       }catch (err) {
+           Raven.captureException(err)
+           req.flash('error', 'Could not add Owner')
+           res.redirect('/users/me')
+       }
     })
 
 module.exports = router

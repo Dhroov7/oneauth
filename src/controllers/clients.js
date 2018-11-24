@@ -76,11 +76,19 @@ function findUserByClientId(clientId) {
   })
 }
 
+function addOwnerofClient(clientId, userId) {
+  return UserClient.create({
+      userId: userId,
+      clientId: clientId
+  })
+}
+
 module.exports = {
   createClient,
   updateClient,
   findClientById,
   findAllClients,
   findAllClientsByUserId,
-  findUserByClientId
+  findUserByClientId,
+  addOwnerofClient
 };

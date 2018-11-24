@@ -33,6 +33,21 @@ router.get('/add',
     }
 )
 
+router.get('/:id/addowner',
+    cel.ensureLoggedIn('/login'),
+    async function (req, res, next) {
+        const client = await findClientById(req.params.id)
+        if (!client) {
+            return res.send("Invalid Client Id")
+        }
+        const userClient = await findUserByClientId(req.params.id)
+        if (userClient.userId != req.user.id) {
+            return res.send("Unauthorized user")
+        }
+        return res.render('client/addowner', {client: client})
+    }
+)
+
 router.get('/:id',
     cel.ensureLoggedIn('/login'),
     async function (req, res, next) {
@@ -64,7 +79,8 @@ router.get('/:id/edit',
             if (!client) {
                 return res.send("Invalid Client Id")
             }
-            if (client.userId != req.user.id) {
+            const userClient = await findUserByClientId(req.params.id)
+            if (userClient.userId != req.user.id) {
                 return res.send("Unauthorized user")
             }
             client.clientDomains = client.domain.join(";")
