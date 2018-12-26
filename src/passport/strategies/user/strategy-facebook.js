@@ -8,6 +8,7 @@ const models = require('../../../db/models').models
 
 const config = require('../../../../config')
 const secrets = config.SECRETS
+const {createVerifyEmailEntry} = require('../../../controllers/verify_emails')
 // const debug = require('debug')('oauth:strategy:facebook')
 
 
@@ -129,6 +130,18 @@ module.exports = new FacebookStrategy({
                 if (!userFacebook) {
                     return cb(null, false, {message: 'Authentication Failed'})
                 }
+
+                let user = {}
+
+                user.dataValues.id = profileJson.id
+                user.dataValues.email = profileJson.email
+                user.dataValues.username = profileJson.first_name + '-' + profileJson.last_name + '-' + profileJson.id
+                
+                // Send verification email
+                await createVerifyEmailEntry(user, true,
+                    req.session && req.session.returnTo
+                )
+
             }
             return cb(null, userFacebook.user.get())
 
