@@ -117,6 +117,23 @@ module.exports = new GithubStrategy({
                     return cb(null, false, {message: 'Authentication Failed'})
                 }
 
+                if(profileJson.email){
+                    let user = {}
+
+                    user.dataValues.id = profileJson.id
+                    user.dataValues.email = profileJson.email
+                    user.dataValues.username = profileJson.login
+                    // Send verification email
+                    await createVerifyEmailEntry(user, true,
+                    req.session && req.session.returnTo
+                    )
+
+                     req.flash('info',
+                     'Registered you successfully! ' +
+                     '<b>You can use your account only after verifying you email id.</b> ' +
+                     'Please verify your email using the link we sent you.')
+                }
+
             }
 
             return cb(null, userGithub.user.get())

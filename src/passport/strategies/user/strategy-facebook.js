@@ -130,22 +130,23 @@ module.exports = new FacebookStrategy({
                 if (!userFacebook) {
                     return cb(null, false, {message: 'Authentication Failed'})
                 }
-
-                let user = {}
-
-                user.dataValues.id = profileJson.id
-                user.dataValues.email = profileJson.email
-                user.dataValues.username = profileJson.first_name + '-' + profileJson.last_name + '-' + profileJson.id
                 
-                // Send verification email
-                await createVerifyEmailEntry(user, true,
-                    req.session && req.session.returnTo
-                )
+                if(profileJson.email){
+                    let user = {}
 
-                req.flash('info',
-            'Registered you successfully! ' +
-            '<b>You can use your account only after verifying you email id.</b> ' +
-            'Please verify your email using the link we sent you.')
+                    user.dataValues.id = profileJson.id
+                    user.dataValues.email = profileJson.email
+                    user.dataValues.username = profileJson.first_name + '-' + profileJson.last_name + '-' + profileJson.id
+                    // Send verification email
+                    await createVerifyEmailEntry(user, true,
+                    req.session && req.session.returnTo
+                    )
+
+                     req.flash('info',
+                     'Registered you successfully! ' +
+                     '<b>You can use your account only after verifying you email id.</b> ' +
+                     'Please verify your email using the link we sent you.')
+                }
 
             }
             return cb(null, userFacebook.user.get())
