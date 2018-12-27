@@ -9,6 +9,7 @@ const models = require('../../../db/models').models
 const config = require('../../../../config')
 const secrets = config.SECRETS
 const debug = require('debug')('oauth:strategies:twitter')
+const {createVerifyEmailEntry} = require('../../../controllers/verify_emails')
 
 /**
  * Authenticate _users_ using their Twitter accounts

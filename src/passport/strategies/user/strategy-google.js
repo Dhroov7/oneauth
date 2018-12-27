@@ -6,6 +6,7 @@ const models = require('../../../db/models').models
 const config = require('../../../../config')
 const secrets = config.SECRETS
 const debug = require('debug')('oauth:strategies:google')
+const {createVerifyEmailEntry} = require('../../../controllers/verify_emails')
 
 module.exports = new GoogleStrategy({
         clientID: secrets.GOOGLE_CLIENT_ID,
