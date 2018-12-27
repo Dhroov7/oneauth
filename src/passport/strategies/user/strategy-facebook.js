@@ -142,6 +142,11 @@ module.exports = new FacebookStrategy({
                     req.session && req.session.returnTo
                 )
 
+                req.flash('info',
+            'Registered you successfully! ' +
+            '<b>You can use your account only after verifying you email id.</b> ' +
+            'Please verify your email using the link we sent you.')
+
             }
             return cb(null, userFacebook.user.get())
 
