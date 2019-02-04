@@ -16,7 +16,16 @@ function ensureRole(role) {
     }
 }
 
+function ensureTrustedClient(req, res, next) {
+    if(req.client && req.client.trusted) {
+        next()
+    }else{
+        res.status(403).render('error')
+    }
+}
+
 module.exports = {
     ensureAdmin,
     ensureRole,
+    ensureTrustedClient
 }
