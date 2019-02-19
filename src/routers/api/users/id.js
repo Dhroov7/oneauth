@@ -68,20 +68,20 @@ router.get('/:id/address',
 router.post('/:id/address', ensureTrustedClient, async (req, res) => {
 
     if (hasNull(req.body, ['first_name', 'last_name', 'number', 'email', 'pincode', 'street_address', 'landmark', 'city', 'stateId', 'countryId', 'dial_code'])) {
-        return res.send(400)
+        return res.sendStatus(400)
     } else {
         if (!req.body.label) {
-            return red.status(400)
+            return res.status(400).send({message: 'Address label is missing.'})
         }
 
         if (!req.body.dial_code) {
-            return res.status(400)
+            return res.status(400).send({message: 'Dial code is missing.'})
         }
 
         try {
             const user = await findUserById(req.params.id, null)
             if (!user) {
-                return res.send('User not found.')
+                return res.status(400).send({mesage: 'User not found.'})
             }
 
             const [demographics, created] = await findOrCreateDemographic(req.params.id)
@@ -106,7 +106,7 @@ router.post('/:id/address', ensureTrustedClient, async (req, res) => {
 
             let number = options.dial_code + options.mobile_number
             if (!validateNumber(parseNumberByCountry(number, req.body.countryId))) {
-                return res.send(400)
+                return res.status(400).send({message: 'Invalid Number'})
             }
             const address = await createAddress(options)
             let includes = [{
@@ -117,7 +117,7 @@ router.post('/:id/address', ensureTrustedClient, async (req, res) => {
 
             return res.send(userAdderess)
         } catch (err) {
-            res.send('Error while adding address.')
+            res.status(500).send({message: 'Error while adding address.'})
         }
     }
 })

@@ -20,7 +20,7 @@ function ensureTrustedClient(req, res, next) {
     if(req.client && req.client.trusted) {
         next()
     }else{
-        res.status(403).render('error')
+        res.status(400).send({message: 'Only for trusted client.'})
     }
 }
 

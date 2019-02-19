@@ -41,51 +41,51 @@ router.post('/', ensureTrustedClient, async (req, res) => {
   let user = {}
 
   if (!req.body.username) {
-    res.status(400)
+    res.status(400).send({message: 'Username is missing'})
   } else {
     user.username = req.body.username
   }
 
   if (!req.body.firstname) {
-    res.status(400)
+    res.status(400).send({message: 'First name is missing'})
   } else {
     user.firstname = req.body.firstname
   }
 
   if (!req.body.lastname) {
-    res.status(400)
+    res.status(400).send({message: 'Last name is missing'})
   } else {
     user.lastname = req.body.lastname
   }
 
   if (!req.body.email) {
-    res.status(400)
+    res.status(400).send({message: 'Email is missing'})
   } else {
     user.email = req.body.email
   }
 
   if (!req.body.mobile_number) {
-    res.status(400)
+    res.status(400).send({message: 'Mobile Number is missing'})
   }
 
   if (!req.body.dial_code) {
-    res.status(400)
+    res.status(400).send({message: 'Dial Code is missing'})
   }
 
   try {
-    let user_exist = await findUserByParams({ username: req.body.username })
-    if (user_exist) {
-      return res.status(400)
+    let userExist = await findUserByParams({ username: req.body.username })
+    if (userExist) {
+      return res.status(400).send({message: 'User is already exist.'})
     }
 
     if (!(validateNumber(parseNumberEntireString(req.body.dial_code + '-' + req.body.mobile_number)))) {
-      res.status(400)
+      res.status(400).send({message: 'Mobile number is invalid'})
     }
 
-    user_exist = await findUserByParams({ email: req.body.email })
+    userExist = await findUserByParams({ email: req.body.email })
 
-    if (user_exist) {
-      return res.status(400)
+    if (userExist) {
+      return res.status(400).send({message: 'User is already exist.'})
     }
 
     let query = {
@@ -110,7 +110,7 @@ router.post('/', ensureTrustedClient, async (req, res) => {
 
     res.send(userLocal)
   } catch (err) {
-    res.send('Error while creating user.')
+    res.status(400).send({message: 'Error while creating user.'})
   }
 
 })
